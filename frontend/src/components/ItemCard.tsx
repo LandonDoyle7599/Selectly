@@ -7,9 +7,10 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import React from "react";
-import { Link } from "react-router-dom";
-import { VoteType } from "../pages/VotingPage";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { validateAuth } from "../hooks/checkAuth";
+import { handleVoteProps, VoteType } from "./Vote";
 
 export type CardProps = {
   title: string;
@@ -20,6 +21,9 @@ export type CardProps = {
 };
 
 export const ItemCard = (props: CardProps) => {
+  const navigate = useNavigate();
+  validateAuth();
+
   const { title, description, imageURL, id, handleVote } = props;
   return (
     <Stack>

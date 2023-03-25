@@ -4,6 +4,7 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
+import { Vote } from "./components/Vote";
 import { ApiContext } from "./contexts/api";
 import { Api } from "./lib/api";
 import CreateAccount from "./pages/CreateAccount";
@@ -14,8 +15,6 @@ import Home from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
 import { StartVote } from "./pages/StartVote";
-import { Vote } from "./pages/VotingPage";
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,10 +26,6 @@ const router = createBrowserRouter([
       {
         path: "create-account",
         element: <CreateAccount />,
-      },
-      {
-        path: "vote",
-        element: <Vote />,
       },
       {
         path: "dashboard",

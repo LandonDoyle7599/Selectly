@@ -33,42 +33,25 @@ export const Vote = (props: VoteProps) => {
   ]);
 
   const blendDeck = (deck: VotingDeck) => {
-    const numCards = Math.floor(deck.cards.length);
-    const frontCards = deck.cards.filter((card) => card.id <= numCards);
-    const backCards = deck.cards.filter((card) => card.id > numCards);
-    const newOrder = [
-      ...frontCards.map((card) => card.id),
-      ...backCards.map((card) => card.id),
-      ...Array.from(
-        { length: deck.cards.length - numCards },
-        (_, i) => i + numCards + 1
-      ).reverse(),
-    ];
-    const newCards = newOrder.map((id) => {
-      const card = deck.cards.find((c) => c.id === id);
-      if (!card) return undefined;
-      return {
-        ...card,
-        id,
-      };
-    });
-    return {
-      ...deck,
-      cards: newCards.filter((card): card is Card => card !== undefined),
-    };
+    let newDeck = { ...deck };
+    newDeck.cards = newDeck.cards.sort(() => Math.random() - 0.5);
+    return newDeck;
   };
 
   useEffect(() => {
     const newD = blendedDecks.map((deck) => blendDeck(deck));
     setBlendedDecks(newD);
+    console.log(blendedDecks);
   }, []);
 
   const handleVote = async (vote: VoteType, cardID: number) => {
     console.log(`Card: ${cardID} was ${vote}d by ${user.firstName}`);
     const nextIndexCalc =
-      activeIndex <= blendedDecks.length - 1 ? activeIndex + 1 : 0;
-    setActiveIndex(nextIndex);
+      activeIndex + 1 <= blendedDecks.length - 1 ? activeIndex + 1 : 0;
+    console.log(`Length of the deck:  ${blendedDecks[0].cards.length}`);
+    console.log(`Active Index: ${activeIndex}`);
     setNextIndex(nextIndexCalc);
+    setActiveIndex(nextIndex);
 
     // TODO: Verify this endpoint
     // const res = await api.post("vote", {
@@ -85,9 +68,8 @@ export const Vote = (props: VoteProps) => {
       <div className="card-groups">
         <div className="card-group" data-status="active">
           {blendedDecks[activeIndex].cards.map((card) => (
-            <div className="big-card item-card">
+            <div className="big-card item-card" key={card.id}>
               <ItemCard
-                key={card.id}
                 title={card.title}
                 description={card.content}
                 photoURL={card.photoURL}
@@ -99,9 +81,8 @@ export const Vote = (props: VoteProps) => {
         </div>
         <div className="card-group" data-status="unknown">
           {blendedDecks[activeIndex].cards.map((card) => (
-            <div className="big-card item-card">
+            <div className="big-card item-card" key={card.id}>
               <ItemCard
-                key={card.id}
                 title={card.title}
                 description={card.content}
                 photoURL={card.photoURL}

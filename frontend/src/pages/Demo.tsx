@@ -9,7 +9,7 @@ export const Demo = () => {
         id: 1,
         title: "Card 1",
         content: "This is the first card",
-        photoURL: "https://picsum.photos/200/300",
+        photoURL: "https://cdn.watchmode.com/posters/01195582_poster_w185.jpg",
       },
       {
         id: 2,

@@ -294,9 +294,8 @@ const getOtherIncompleteDecks =
               id: userId,
             },
           },
+          status: "active",
         },
-        status: "active",
-      },
       include: {
         users: true,
         cards: true,

@@ -22,12 +22,13 @@ export const Profile: FC = () => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dataChanged, setDataChanged] = useState(false);
+  const [friendsEmail, setFriendsEmail] = useState<string>("");
 
   const formik = useFormik({
     initialValues: {
-      firstName: user ? user.firstName : "",
-      lastName: user ? user.lastName : "",
-      email: user ? user.email : "",
+      firstName: "",
+      lastName: "",
+      email: "",
       password: "",
     },
     validationSchema: yup.object({
@@ -86,13 +87,13 @@ export const Profile: FC = () => {
           throw new Error(res.message);
         }
       });
-      // api.get("friends").then
-      //     ((res) => {
-      //         if(res.users){
-      //         setFriends(res);}else{
-      //             throw new Error(res.message);
-      //         }
-      //     })
+      api.get("friends").then((res) => {
+        if (res.friends) {
+          res.friends.length > 0 ? setFriends(res.friends) : setFriends([]);
+        } else {
+          throw new Error(res.message);
+        }
+      });
     } catch (err: any) {
       setError(err.message);
     }
@@ -125,7 +126,10 @@ export const Profile: FC = () => {
 
   const acceptFriendRequest = (friendRequest: FriendRequest) => {
     api
-      .put("friends/accept", { friendRequestId: friendRequest.id })
+      .put("friends/response", {
+        friendRequestId: friendRequest.id,
+        response: "accepted",
+      })
       .then((res) => {
         if (res.friendRequest) {
           setPendingFriendRequests(
@@ -143,7 +147,10 @@ export const Profile: FC = () => {
 
   const declineFriendRequest = (friendRequest: FriendRequest) => {
     api
-      .put("friends/decline", { friendRequestId: friendRequest.id })
+      .put("friends/response", {
+        friendRequestId: friendRequest.id,
+        response: "declined",
+      })
       .then((res) => {
         if (res.friendRequest) {
           setPendingFriendRequests(
@@ -192,7 +199,7 @@ export const Profile: FC = () => {
 
   const sendFriendRequest = () => {
     api
-      .post("friends/invite", { friendEmail: formik.values.email })
+      .post("friends/invite", { friendEmail: friendsEmail })
       .then((res) => {
         if (res.friendRequest) {
           setSentFriendRequests(sentFriendRequests?.concat(res.friendRequest));
@@ -213,7 +220,12 @@ export const Profile: FC = () => {
       <Modal open={open} onClose={() => setOpen(false)}>
         <Stack direction={"column"}>
           <h2>Send Friend Request</h2>
-          <TextField label="Email" variant="outlined" />
+          <TextField
+            label="Email"
+            variant="outlined"
+            value={friendsEmail}
+            onChange={(e) => setFriendsEmail(e.target.value)}
+          />
           <Button onClick={sendFriendRequest}>Send</Button>
         </Stack>
       </Modal>
@@ -265,9 +277,7 @@ export const Profile: FC = () => {
       {friends?.map((friend) => {
         return (
           <Stack direction={"row"}>
-            <h3>
-              {friend.firstName} {friend.lastName}
-            </h3>
+            <h3>Friends</h3>
             <Button>Remove Friend</Button>
           </Stack>
         );
@@ -280,7 +290,9 @@ export const Profile: FC = () => {
               {friendRequest.receiver.firstName}{" "}
               {friendRequest.receiver.lastName}
             </h3>
-            <Button>Cancel</Button>
+            <Button onClick={() => cancelFriendRequest(friendRequest)}>
+              Cancel
+            </Button>
           </Stack>
         );
       })}
@@ -292,8 +304,12 @@ export const Profile: FC = () => {
               {friendRequest.receiver.firstName}{" "}
               {friendRequest.receiver.lastName}
             </h3>
-            <Button>Accept</Button>
-            <Button>Decline</Button>
+            <Button onClick={() => acceptFriendRequest(friendRequest)}>
+              Accept
+            </Button>
+            <Button onClick={() => declineFriendRequest(friendRequest)}>
+              Decline
+            </Button>
           </Stack>
         );
       })}

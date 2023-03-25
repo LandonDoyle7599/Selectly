@@ -44,7 +44,7 @@ const router = createBrowserRouter([
         element: <CreateDeck />,
       },
       {
-        path: "startVoting",
+        path: "startVote/:type",
         element: <StartVote />,
       },
 

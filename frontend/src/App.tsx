@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import {
     createBrowserRouter,
     RouterProvider,
@@ -14,6 +14,7 @@ import { Profile } from './pages/Profile'
 import { StartVote } from './pages/StartVote'
 import { History } from './pages/History'
 import { Dashboard } from './pages/Dashboard'
+import { Demo } from './pages/Demo'
 
 const router = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
             {
                 path: 'create-account',
                 element: <CreateAccount />,
+            },
+            {
+              path: 'demo',
+              element: <Demo />,
             },
             {
                 path: 'dashboard',
@@ -57,13 +62,13 @@ const router = createBrowserRouter([
 ])
 
 export const App = () => {
-    const [api, setApi] = useState(new Api())
+  const [api, setApi] = useState(new Api());
 
-    return (
-        <>
-            <ApiContext.Provider value={api}>
-                <RouterProvider router={router} />
-            </ApiContext.Provider>
-        </>
-    )
-}
+  return (
+    <>
+      <ApiContext.Provider value={api}>
+        <RouterProvider router={router} />
+      </ApiContext.Provider>
+    </>
+  );
+};

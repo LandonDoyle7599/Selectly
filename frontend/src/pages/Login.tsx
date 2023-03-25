@@ -96,7 +96,13 @@ export const Login: FC = () => {
                 variant="contained"
                 onClick={formik.submitForm}
                 loading={formik.isSubmitting}
-                sx={{ mx: 2, backgroundColor: "#e1bee7" }}
+                sx={{
+                  mx: 2,
+                  backgroundColor: "#6a1b9a",
+                  ":hover": {
+                    backgroundColor: "#ab47bc",
+                  },
+                }}
               >
                 Login
               </LoadingButton>
@@ -106,7 +112,7 @@ export const Login: FC = () => {
               <Button
                 variant="text"
                 onClick={() => navigate("/create-account")}
-                sx={{ mx: 2, color: "primary.main" }}
+                sx={{ mx: 2, color: "#6a1b9a" }}
               >
                 Create Account
               </Button>

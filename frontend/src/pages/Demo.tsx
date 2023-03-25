@@ -22,7 +22,8 @@ export const Demo = () => {
         id: 3,
         title: "Spiderman",
         content: "Stay spidey",
-        photoURL: "https://r1.ilikewallpaper.net/ipad-pro-wallpapers/download/37917/Spiderman-hero-ipad-pro-wallpaper-ilikewallpaper_com.jpg,
+        photoURL:
+          "https://r1.ilikewallpaper.net/ipad-pro-wallpapers/download/37917/Spiderman-hero-ipad-pro-wallpaper-ilikewallpaper_com.jpg",
       },
       {
         id: 4,

@@ -27,7 +27,7 @@ export const ItemCard = (props: CardProps) => {
   const { title, description, photoURL, id, handleVote } = props;
   console.log(photoURL);
   return (
-    <Card className="big-card">
+    <Card>
       <CardMedia
         component="img"
         height="140"

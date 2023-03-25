@@ -49,9 +49,28 @@ const createUser =
 
 const updateUser =
     (client: PrismaClient): RequestHandler =>
-        async (req, res) => {
+        async (req: RequestWithJWTBody, res) => {
             const { firstName, lastName, email, password } = req.body as UpdateUserBody
-            // const userId = req.jwtBody?.userId
+            const userId = req.jwtBody?.userId
+
+            const oldUser = await client.user.findUnique({
+                where: {
+                    id: userId
+                }
+            })
+            const oldPasswordHash = oldUser?.passwordHash
+    
+            const user = await client.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    firstName,
+                    lastName,
+                    passwordHash: password == "" ? oldPasswordHash : await bcrypt.hash(password, 10),
+                },
+            })
+            res.json({ user })
         }
 
 const login =
@@ -107,6 +126,7 @@ const getMe =
 
 export const usersController = controller('users', [
     { path: '/me', endpointBuilder: getMe, method: 'get' },
+    { path: '/update', endpointBuilder: updateUser, method: 'post' },
     { path: '/', method: 'post', endpointBuilder: createUser, skipAuth: true },
     { path: '/login', method: 'post', endpointBuilder: login, skipAuth: true },
 ])

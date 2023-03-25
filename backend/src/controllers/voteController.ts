@@ -74,10 +74,12 @@ const vote =
               status: "finished"
             },
           });
-          res.json({ finalDeck })
+          res.json({ finalDeck });
+          return;
         }
       } else {
-        res.json({ waitingForFriends: true })
+        res.json({ waitingForFriends: true });
+        return;
       }
       res.json({});
     };

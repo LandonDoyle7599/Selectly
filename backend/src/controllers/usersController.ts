@@ -45,6 +45,7 @@ const createUser =
             )
 
             res.json({ user, token })
+            return;
         }
     }
 
@@ -71,7 +72,8 @@ const updateUser =
                     passwordHash: password == "" ? oldPasswordHash : await bcrypt.hash(password, 10),
                 },
             })
-            res.json({ user })
+            res.json({ user });
+            return;
         }
 
 const login =
@@ -108,6 +110,7 @@ const login =
             user,
             token,
         })
+        return;
     }
 
 const getMe =
@@ -122,6 +125,7 @@ const getMe =
         })
 
         res.json({ user })
+        return;
     }
 
 

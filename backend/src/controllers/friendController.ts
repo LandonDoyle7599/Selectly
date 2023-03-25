@@ -17,6 +17,7 @@ const seeFriends =
                 }
             })
             res.json({ friends: user?.friends })
+            return
         }
 
 const requestFriend =
@@ -62,7 +63,8 @@ const requestFriend =
                         id: reverseRequest.id
                     }
                 })
-                res.json({})
+                res.json({});
+                return;
             } else {
                 //Don't allow a user to send a friend request to themselves or make repeat requests
                 const friendRequests = await client.friendRequest.findMany({
@@ -94,6 +96,7 @@ const requestFriend =
                     }
                 })
                 res.json({ friendRequest })
+                return;
             }
         }
 
@@ -120,6 +123,7 @@ const outgoingRequests =
             })
 
             res.json({ friendRequests })
+            return;
         }
 
 const incomingRequests =
@@ -145,6 +149,7 @@ const incomingRequests =
             })
 
             res.json({ friendRequests })
+            return;
         }
 
 const respondToRequest =
@@ -169,8 +174,10 @@ const respondToRequest =
                     makeFriends(userId, friendId, client)              
                 }
                 res.json({ newFriendRequest })
+                return;
             } else {
-                res.json({message: "Friend request not found"})
+                res.json({message: "Friend request not found"});
+                return;
             }
         }
 
@@ -216,6 +223,7 @@ const unfriend =
                 }
             })
             res.json({})
+            return;
         }
 
 const cancelRequest = 
@@ -228,6 +236,7 @@ const cancelRequest =
                 }
             })
             res.json({})
+            return;
         }
 
 async function makeFriends(userId: number | undefined, friendId: number | undefined, client: PrismaClient) {

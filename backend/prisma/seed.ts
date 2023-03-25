@@ -44,6 +44,31 @@ async function main() {
       },
     },
   });
+  let card1 = await client.card.create({
+    data: {
+      title: "Card 1",
+      content: "Card 1 description",
+    },
+  });
+  let card2 = await client.card.create({
+    data: {
+      title: "Card 2",
+      content: "Card 2 description",
+    },
+  });
+  let deck = await client.votingDeck.create({
+    data: {
+      title: "Test Deck",
+      users: {
+        connect: [{ id: bob.id }, { id: steve.id }],
+      },
+      cards: {
+        connect: [{ id: card1.id }, { id: card2.id }],
+      },
+      status: "active",
+      type: "custom",
+    },
+  });
 }
 
 main()

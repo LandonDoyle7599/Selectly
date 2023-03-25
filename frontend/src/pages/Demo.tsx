@@ -15,19 +15,20 @@ export const Demo = () => {
         id: 2,
         title: "Avengers",
         content: "Hammer time",
-        photoURL: "https://unsplash.com/photos/TnXsLbvP2Qs",
+        photoURL:
+          "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.nZWw7ANfTXh4bphyheZErwHaEA%26pid%3DApi&f=1&ipt=82efed2f4387c2ba2dbea01e0ec99de80c7b62040b3522b16ad143783427f535&ipo=images",
       },
       {
         id: 3,
         title: "Spiderman",
         content: "Stay spidey",
-        photoURL: "https://unsplash.com/photos/kL4coQHVj_A",
+        photoURL: "https://r1.ilikewallpaper.net/ipad-pro-wallpapers/download/37917/Spiderman-hero-ipad-pro-wallpaper-ilikewallpaper_com.jpg,
       },
       {
         id: 4,
         title: "Interstellar",
         content: "Time",
-        photoURL: "https://unsplash.com/photos/-Bq3TeSBRdE",
+        photoURL: "https://picfiles.alphacoders.com/101/101684.jpg",
       },
     ],
   } as VotingDeck;

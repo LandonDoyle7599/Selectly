@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { validateAuth } from "../hooks/checkAuth";
+import "../styles/voteStyles.css";
 import { handleVoteProps, VoteType } from "./Vote";
 
 export type CardProps = {
@@ -24,49 +25,19 @@ export const ItemCard = (props: CardProps) => {
   validateAuth();
 
   const { title, description, photoURL, id, handleVote } = props;
+  console.log(photoURL);
   return (
-    <Stack>
-      <Card>
-        <CardMedia
-          sx={{ height: "100%" }}
-          image={photoURL ? photoURL : " "}
-          title={title}
-        />
-        <CardContent>
-          <Typography variant="h4">{title}</Typography>
-          <Typography variant="body1">{description}</Typography>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardActions>
-          <Button
-            sx={{
-              ":hover": {
-                bgcolor: "#BDE89B",
-                color: "6FC030",
-              },
-            }}
-            size="small"
-            color="primary"
-            onClick={() => handleVote("like", id)}
-          >
-            <ThumbUpIcon htmlColor="#6FC030" />
-          </Button>
-          <Button
-            sx={{
-              ":hover": {
-                bgcolor: "#E8AD9B",
-                color: "primary",
-              },
-            }}
-            size="small"
-            color="error"
-            onClick={() => handleVote("dislike", id)}
-          >
-            <ThumbDownIcon />
-          </Button>
-        </CardActions>
-      </Card>
-    </Stack>
+    <Card className="big-card">
+      <CardMedia
+        component="img"
+        height="140"
+        src={photoURL ? photoURL : " "}
+        title={title}
+      />
+      <CardContent>
+        <Typography variant="h4">{title}</Typography>
+        <Typography variant="body1">{description}</Typography>
+      </CardContent>
+    </Card>
   );
 };

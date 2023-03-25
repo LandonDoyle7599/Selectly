@@ -8,6 +8,8 @@ import "../styles/dashboard.css";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
 import { TestVoting } from "./TestVoting";
+import { MovieCard } from "../components/MovieCard";
+import { RestaurantCard } from "../components/RestaurantCard";
 
 
 export const Dashboard: FC = () => {
@@ -60,34 +62,15 @@ export const Dashboard: FC = () => {
         <Button className="button-dash" onClick={() => navigate("/createDeck")}>
           Deck creation
         </Button>
-        <Button
-          className="button-dash"
-          onClick={() => navigate("/startVoting")}
-        >
-          Start voting
-        </Button>
       </Card>
       <h1>Decks</h1>
-        <Grid item xs={12} sm={6} md={4}>
-            <Card sx={{ maxWidth: 345 }} onClick={() => navigate("/startvote/movie")}>
-                <CardActionArea>
-                    <CardMedia
-                        component="img"
-                        height="140"
-                        image="/static/images/cards/contemplative-reptile.jpg"
-                        alt="green iguana"
-                    />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            Movies
-                            </Typography>
-                    </CardContent>
-                </CardActionArea>
-            </Card>
+        <Grid item xs={12} sm={6} md={4} spacing={1}>
+            <MovieCard/>
+            <RestaurantCard/>
       </Grid>
       <h1>Pending Votes</h1>
       {votingDeck !== undefined && (
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid item xs={12} sm={6} md={4} spacing={1}>
             <Card sx={{ maxWidth: 345 }} onClick={() => setOpen(true)}>
                 <CardActionArea>
                     <CardMedia
@@ -98,7 +81,7 @@ export const Dashboard: FC = () => {
                     />
                     <CardContent>
                         <Typography variant="body2" color="text.secondary">
-                            {votingDeck.title}
+                            {votingDeck[0]?.title}
                             </Typography>
                     </CardContent>
                 </CardActionArea>

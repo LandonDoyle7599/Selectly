@@ -17,7 +17,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
     const [activeCard, setActiveCard] = useState<Card>();
 
     const castVote = (vote: boolean) => {
-        api.post("vote", {
+        api.post("vote/", {
             deckId: votingDeck.id,
             cardId: votingDeck.cards[index].id,
             vote: vote,
@@ -30,11 +30,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
     }
 
     useEffect(() => {
-        if(votingDeck.cards[index]){
-            setActiveCard(votingDeck.cards[index]);
-        }else{
-            navigate("/dashboard");
-        }
+        setActiveCard(votingDeck.cards[index]);
     }, [index])
 
 
@@ -42,7 +38,8 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
         <div>
             <h1>Test Voting</h1>
             <div>
-                <h2>{activeCard?.title}</h2>
+                {activeCard !== undefined &&
+                <h2>{activeCard?.title}</h2>}
                 </div>
                 <div>
                     <Button onClick={() => castVote(true)}>Yes</Button>

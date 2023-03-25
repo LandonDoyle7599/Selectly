@@ -42,7 +42,6 @@ export const StartMovie: FC = () => {
     }),
     onSubmit: (values, { setSubmitting }) => {
       setError(null);
-      console.log('here')
       api
         .post("decks/movies", {
           title: values.title,
@@ -63,12 +62,6 @@ export const StartMovie: FC = () => {
         .then(() => setSubmitting(false));
     },
   });
-
-  const printValues = () => {
-    console.log(formik.values);
-    console.log(removeLeadingUnderscoresAndConvertToIntArray(formik.values.genres));
-    console.log(removeLeadingUnderscoresAndConvertToIntArray(formik.values.services));
-    };
 
     if(showVoting && votingDeck){
         return <TestVoting votingDeck={votingDeck}/>

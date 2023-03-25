@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import cors from "cors";
 import { usersController } from './controllers/usersController';
 import { decksController } from './controllers/decksController';
+import { friendController } from './controllers/friendController';
+
 
 dotenv.config()
 const client = new PrismaClient()
@@ -14,6 +16,7 @@ app.use(cors())
 
 usersController(app, client)
 decksController(app, client)
+friendController(app, client)
 
 app.get('/', (req, res) => {
     res.send(`<h1>Hello, world!</h1>`)

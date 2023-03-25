@@ -23,8 +23,9 @@ model VotingDeck {
 }
 
 model CustomDeck {
-    id    Int    @id @default(autoincrement())
-    user  User   @relation(fields: [id], references: [id])
+    id  Int @id @default(autoincrement())
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId Int
     cards Card[]
     title String
     type  String
@@ -43,8 +44,8 @@ model User {
     votingDeck             VotingDeck[]
     customDeck             CustomDeck[]
     votes                  Vote[]
-    sentFriendRequests     FriendRequest[] @relation("Sender")
-    receivedFriendRequests FriendRequest[] @relation("Receiver")
+    friendRequests         FriendRequest[] @relation("Sender")
+    friendRequestsReceived FriendRequest[] @relation("Receiver")
 }
 
 model Card {
@@ -64,19 +65,23 @@ model Card {
 
 model Vote {
     id        Int        @id @default(autoincrement())
-    deck      VotingDeck @relation(fields: [id], references: [id])
-    user      User       @relation(fields: [id], references: [id])
-    card      Card       @relation(fields: [id], references: [id])
-    vote      Boolean
+    deck      VotingDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    card      Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    deckId    Int
+    userId    Int
+    cardId    Int
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
 }
 
 model FriendRequest {
     id        Int      @id @default(autoincrement())
-    status    String
-    sender    User     @relation("Sender", fields: [id], references: [id])
-    receiver  User     @relation("Receiver", fields: [id], references: [id])
+    status    String    
+    sender    User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+    receiver  User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    senderId  Int
+    receiverId Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

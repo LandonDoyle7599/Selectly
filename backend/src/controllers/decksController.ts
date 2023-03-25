@@ -97,17 +97,6 @@ const makeMovieDeck =
     const { services, quantity, genres, title, friends } =
       req.body as MovieDeckCreationBody;
 
-    const newDeck = await createNewVotingDeck({
-      client,
-      userId,
-      type: "movie",
-      title,
-      friends,
-    });
-    if (!newDeck) {
-      res.status(404).json({ message: "Invalid Input" });
-      return;
-    }
 
     // build url to request to api for list of titles
     const url = "https://api.watchmode.com/v1/";
@@ -160,6 +149,18 @@ const makeMovieDeck =
         });
       if (movieIds.length < 1) {
         res.status(404).json({ message: "No movies found" });
+        return;
+      }
+
+      const newDeck = await createNewVotingDeck({
+        client,
+        userId,
+        type: "movie",
+        title,
+        friends,
+      });
+      if (!newDeck) {
+        res.status(404).json({ message: "Invalid Input" });
         return;
       }
 
@@ -304,29 +305,49 @@ const getOtherIncompleteDecks =
     res.json(decks);
   };
 
-// const makeCustomDeck =
-//   (client: PrismaClient): RequestHandler =>
-//   async (req: RequestWithJWTBody, res) => {
-//     const { cards, title, type } = req.body as CustomDeckProps;
-//     const userId = req.jwtBody?.userId;
-//     const newCards: Card[] = [];
-//     for (let i = 0; i < cards.length; i++) {
-//       const card = await client.card.create({
-//         data: {
-//           title: cards[i].title,
-//           content: cards[i].content,
-//         }
-//       })
-//       newCards.push(card);
-//     }
-//     const newDeck = await client.votingDeck.create({
-//       data: {
-//         title,
-//         type,
+const makeCustomDeck =
+  (client: PrismaClient): RequestHandler =>
+  async (req: RequestWithJWTBody, res) => {
+    const { cards, title, type } = req.body as CustomDeckProps;
+    const userId = req.jwtBody?.userId;
+    const newCards: Card[] = [];
+    const newDeck = await client.votingDeck.create({
+      data: {
+        title,
+        type,
+        status: "active",
+        users: { connect: { id: userId } },
+      }
+    });
+    for (let i = 0; i < cards.length; i++) {
+      const card = await client.card.create({
+        data: {
+          title: cards[i].title,
+          content: cards[i].content,
+        }
+      })
+      await client.votingDeck.update({
+        where: {
+          id: newDeck.id,
+        },
+        data: {
+          cards: { connect: { id: card.id } },
+        },
+      });
+      newCards.push(card);
+    }
 
-//     })
-    
-//   }
+    const deck = await client.votingDeck.findUnique({
+      where: {
+        id: newDeck.id,
+      },
+      include: {
+        users: true,
+        cards: true,
+      },
+    });
+    res.json({ deck })
+  }
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },

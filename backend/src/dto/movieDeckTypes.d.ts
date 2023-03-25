@@ -1,8 +1,3 @@
-export type MovieSource = {
-    source_id: 203 | 157 | 26 | 387 | 372 | 371 | 444 | 389 | 307
-    name: string
-}
-
 export type MovieDeckCreationBody = {
     services?: number[]
     quantity: number

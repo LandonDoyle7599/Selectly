@@ -102,69 +102,81 @@ export const CreateDeck: FC = () => {
   }
 
   return (
-    <MCard>
-      <Typography variant="h4" component="h1" gutterBottom align="center">
-        Card Information
-      </Typography>
-
-      <Stack
-        direction="column"
-        sx={{
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        marginTop={4}
-        spacing={2}
-      >
-        <TextField
-          label="Card Title"
-          variant="outlined"
-          value={cardTitle}
-          onChange={(e) => setCardTitle(e.target.value)}
-        />
-        <TextField
-          label="Card Content"
-          variant="outlined"
-          value={cardContent}
-          onChange={(e) => setCardContent(e.target.value)}
-        />
-        <Button variant="contained" onClick={() => addCard()} sx={buttonSx}>
-          Add Card
-        </Button>
-      </Stack>
-      {CurrentCards({ cards })}
-      <Stack
-        direction="column"
-        sx={{
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        spacing={2}
-        marginTop={4}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          {" "}
-          Deck Information
+    <div
+      style={{
+        backgroundImage: "url(../../public/Mountains.png)",
+        height: "100vh",
+        width: "100%",
+      }}
+    >
+      <MCard>
+        <Typography variant="h4" component="h1" gutterBottom align="center">
+          Card Information
         </Typography>
-        <TextField
-          label="Deck Name"
-          variant="outlined"
-          value={deckName}
-          onChange={(e) => setDeckName(e.target.value)}
-        />
-        <TextField
-          label="Deck Type"
-          variant="outlined"
-          value={deckType}
-          onChange={(e) => setDeckType(e.target.value)}
-        />
 
-        <Button variant="contained" onClick={() => createDeck()} sx={buttonSx}>
-          Create Deck
-        </Button>
-      </Stack>
-    </MCard>
+        <Stack
+          direction="column"
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          marginTop={4}
+          spacing={2}
+        >
+          <TextField
+            label="Card Title"
+            variant="outlined"
+            value={cardTitle}
+            onChange={(e) => setCardTitle(e.target.value)}
+          />
+          <TextField
+            label="Card Content"
+            variant="outlined"
+            value={cardContent}
+            onChange={(e) => setCardContent(e.target.value)}
+          />
+          <Button variant="contained" onClick={() => addCard()} sx={buttonSx}>
+            Add Card
+          </Button>
+        </Stack>
+        {CurrentCards({ cards })}
+        <Stack
+          direction="column"
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          spacing={2}
+          marginTop={4}
+        >
+          <Typography variant="h4" component="h1" gutterBottom>
+            {" "}
+            Deck Information
+          </Typography>
+          <TextField
+            label="Deck Name"
+            variant="outlined"
+            value={deckName}
+            onChange={(e) => setDeckName(e.target.value)}
+          />
+          <TextField
+            label="Deck Type"
+            variant="outlined"
+            value={deckType}
+            onChange={(e) => setDeckType(e.target.value)}
+          />
+
+          <Button
+            variant="contained"
+            onClick={() => createDeck()}
+            sx={buttonSx}
+          >
+            Create Deck
+          </Button>
+        </Stack>
+      </MCard>
+    </div>
   );
 };

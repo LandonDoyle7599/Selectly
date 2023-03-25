@@ -1,7 +1,7 @@
 export type CreateVotingDeckProps = {
   client: PrismaClient;
   userId?: number;
-  type: string;
+  type: "custom" | "movie";
   title: string;
   friends: number[];
 };

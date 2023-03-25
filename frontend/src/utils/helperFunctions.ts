@@ -80,9 +80,15 @@ export function getCardVotes(deck: VotingDeck) : CardsToVoteCount {
     }
     //sort object by keys in descending order
     const sortedCardVotes: CardsToVoteCount = {};
-    Object.keys(cardVotes).sort().reverse().forEach(function(key) {
+    Object.keys(cardVotes).sort().forEach(function(key) {
         sortedCardVotes[key] = cardVotes[key];
     });
+    console.log(sortedCardVotes)
     return sortedCardVotes;
+}
+
+export function getMostVotedForCard(deck: VotingDeck) : string {
+    const cardVotes = getCardVotes(deck);
+    return Object.keys(cardVotes)[0];
 }
 

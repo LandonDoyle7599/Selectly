@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { validateAuth } from "../hooks/checkAuth";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
-import "../styles/dashboard.css";
+import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
 
 export const Dashboard: FC = () => {

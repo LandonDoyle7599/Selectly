@@ -2,36 +2,7 @@ import { Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useNavigate } from "react-router-dom";
 import { validateAuth } from "../hooks/checkAuth";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    padding: theme.spacing(4),
-  },
-  heading: {
-    marginBottom: theme.spacing(2),
-    fontWeight: 600,
-    color: "#6a1b9a", // Purple heading color
-    textAlign: "center",
-  },
-  text: {
-    marginBottom: theme.spacing(4),
-    color: "#333", // Dark gray text color
-    textAlign: "center",
-  },
-  button: {
-    marginTop: theme.spacing(2),
-    backgroundColor: "#6a1b9a", // Purple button background color
-    color: "#fff", // White button text color
-    "&:hover": {
-      backgroundColor: "#9c27b0", // Darker purple button background color on hover
-    },
-  },
-}));
+import { useStyles } from "../styles/FormStyle";
 
 export const Home: React.FC = () => {
   const classes = useStyles();

@@ -12,18 +12,22 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { useFormik } from "formik";
 import React, { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useApi } from "../hooks/useApi";
 import { useAuth } from "../hooks/useAuth";
+import { useStyles } from "../styles/FormStyle";
 import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Login: FC = () => {
+  const classes = useStyles();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const api = useApi();
+  const theme = useTheme();
 
   const navigateToHome = () => {
     navigate("/home");
@@ -92,6 +96,7 @@ export const Login: FC = () => {
                 variant="contained"
                 onClick={formik.submitForm}
                 loading={formik.isSubmitting}
+                sx={{ mx: 2, backgroundColor: theme.palette.primary.main }}
               >
                 Login
               </LoadingButton>
@@ -112,5 +117,3 @@ export const Login: FC = () => {
     </Container>
   );
 };
-
-export default Login;

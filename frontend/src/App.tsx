@@ -99,11 +99,11 @@ export const App = () => {
 
   return (
     <>
-      <ApiContext.Provider value={api}>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
+        <ApiContext.Provider value={api}>
           <RouterProvider router={router} />
-        </ThemeProvider>
-      </ApiContext.Provider>
+        </ApiContext.Provider>
+      </ThemeProvider>
     </>
   );
 };

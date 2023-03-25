@@ -1,34 +1,66 @@
-import React, { useEffect } from "react"
-import { Link } from "react-router-dom"
-import { useNavigate } from "react-router-dom"
-import { Typography, Button } from "@material-ui/core"
-import { useAuth } from "../hooks/useAuth";
+import { Button, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { useNavigate } from "react-router-dom";
+import { validateAuth } from "../hooks/checkAuth";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: "100vh",
+    padding: theme.spacing(4),
+  },
+  heading: {
+    marginBottom: theme.spacing(2),
+    fontWeight: 600,
+    color: "#6a1b9a", // Purple heading color
+    textAlign: "center",
+  },
+  text: {
+    marginBottom: theme.spacing(4),
+    color: "#333", // Dark gray text color
+    textAlign: "center",
+  },
+  button: {
+    marginTop: theme.spacing(2),
+    backgroundColor: "#6a1b9a", // Purple button background color
+    color: "#fff", // White button text color
+    "&:hover": {
+      backgroundColor: "#9c27b0", // Darker purple button background color on hover
+    },
+  },
+}));
 
 export const Home: React.FC = () => {
- const navigate = useNavigate()
+  const classes = useStyles();
+  const navigate = useNavigate();
 
- useEffect(() => {
-  if(window.localStorage.getItem("token") !== "" && window.localStorage.getItem("token") !== null){
-    navigate("/dashboard", { replace: true })
-  }
- }, [])
+  validateAuth();
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", padding: "16px" }}>
-      <Typography variant="h2" style={{ marginBottom: "16px" }}>
-                Welcome to our Reptile Tracker web application!
+    <div className={classes.root}>
+      <Typography variant="h2" className={classes.heading}>
+        Welcome to Selectly!
       </Typography>
-      <Typography variant="body1" style={{ marginBottom: "16px" }}>
-        Our application is designed to help reptile owners track the health, feeding, and other important information about their beloved pets.
+      <Typography variant="body1" className={classes.text}>
+        Our application is designed to help indecisive people make decisions.
       </Typography>
-      <Button variant="contained" onClick={() => navigate("/login")} color="primary" style={{ marginTop: "16px" }}>
+      <Button
+        variant="contained"
+        onClick={() => navigate("/login")}
+        className={classes.button}
+      >
         Login
       </Button>
-      <Button variant="contained" onClick={() => navigate("/create-account")} color="primary" style={{ marginTop: "16px" }}>
+      <Button
+        variant="contained"
+        onClick={() => navigate("/create-account")}
+        className={classes.button}
+      >
         Create Account
       </Button>
     </div>
   );
 };
-
-export default Home

@@ -241,15 +241,58 @@ const getDeckById =
     res.status(403).json({ message: "Forbidden" });
   };
 
-const getIncompleteDecks =
+const getHistory =
   (client: PrismaClient): RequestHandler =>
-  async (req: RequestWithJWTBody, res) => {
-    const userId = req.jwtBody?.userId;
-    const decks = await client.votingDeck.findMany({
-      where: {
-        users: {
-          some: {
-            id: userId,
+    async (req: RequestWithJWTBody, res) => {
+      const userId = req.jwtBody?.userId;
+      const decks = await client.votingDeck.findMany({
+        where: {
+          finishedUsers: {
+            some: {
+              id: userId,
+            },
+          },
+          status: "finished"
+        },
+        include: {
+          users: true,
+          cards: true,
+        },
+      });
+      res.json(decks);
+    }
+
+const getMyIncompleteDecks =
+  (client: PrismaClient): RequestHandler =>
+    async (req: RequestWithJWTBody, res) => {
+      const userId = req.jwtBody?.userId;
+      const decks = await client.votingDeck.findMany({
+        where: {
+          finishedUsers: {
+            none: {
+              id: userId,
+            },
+          },
+          status: "active"
+        },
+        include: {
+          users: true,
+          cards: true,
+        },
+      });
+      res.json(decks);
+    }
+
+const getOtherIncompleteDecks =
+  (client: PrismaClient): RequestHandler =>
+    async (req: RequestWithJWTBody, res) => {
+      const userId = req.jwtBody?.userId;
+      const decks = await client.votingDeck.findMany({
+        where: {
+          finishedUsers: {
+            some: {
+              id: userId,
+            },
           },
         },
         status: "active",
@@ -265,5 +308,7 @@ const getIncompleteDecks =
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },
   { path: "/:id", endpointBuilder: getDeckById, method: "get" },
-  { path: "/waiting", endpointBuilder: getIncompleteDecks, method: "get" },
+  { path: "/history", endpointBuilder: getHistory, method: "get" },
+  { path: "/waiting/me", endpointBuilder: getMyIncompleteDecks, method: "get" },
+  { path: "/waiting/others", endpointBuilder: getOtherIncompleteDecks, method: "get" },
 ]);

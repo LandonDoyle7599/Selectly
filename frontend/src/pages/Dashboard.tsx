@@ -1,12 +1,23 @@
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import { Button, Card, CardActionArea, CardContent, CardMedia, Grid, IconButton, Popover, Popper, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Grid,
+  IconButton,
+  Popover,
+  Popper,
+  Typography,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateAuth } from "../hooks/checkAuth";
-import "../styles/dashboard.css";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
+import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
 import { MovieCard } from "../components/MovieCard";
 import { RestaurantCard } from "../components/RestaurantCard";
@@ -16,9 +27,8 @@ export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
+  const [votingDecks, setVotingDecks] = useState<VotingDeck[]>();
 
-
-  const [votingDeck, setVotingDeck] = useState<VotingDeck[]>();
   const api = useApi();
   const navigate = useNavigate();
   validateAuth();
@@ -29,34 +39,38 @@ export const Dashboard: FC = () => {
   };
 
   useEffect(() => {
-    console.log('here')
+    console.log("here");
     api.get("decks/waiting/me").then((res) => {
-        if(!res.message){
-        setVotingDeck(res);
-        console.log(res)
-        }
+      if (!res.message) {
+        setVotingDecks(res);
+        console.log(res);
+      }
     });
-    }, []);
+  }, []);
 
-    if(open && votingDeck !== undefined){
-        return <TestVoting votingDeck={votingDeck[0]}/>
-    }
+  if (open && votingDecks !== undefined) {
+    return <TestVoting votingDeck={votingDecks[0]} />;
+  }
 
-
+  if (open && votingDecks) {
+    return <TestVoting votingDeck={votingDecks[0]} />;
+  }
 
   return (
     <Stack sx={{ width: "100vw", height: "100vh" }} direction="column">
       <Card
         sx={{
+          display: "flex",
+          justifyContent: "align-items",
           p: 2,
           m: 4,
-          width: "70%",
+          backgroundColor: "primary.secondary",
         }}
       >
-        <Button className="button-dash" onClick={() => navigate("/profile")}>
+        <Button className="dash-button" onClick={() => navigate("/profile")}>
           Profile
         </Button>
-        <Button className="button-dash" onClick={() => navigate("/history")}>
+        <Button className="dash-button" onClick={() => navigate("/history")}>
           History
         </Button>
         <Button className="button-dash" onClick={() => navigate("/createDeck")}>
@@ -87,7 +101,7 @@ export const Dashboard: FC = () => {
                 </CardActionArea>
             </Card>
         </Grid>
-        )}
+      )}
     </Stack>
   );
 };

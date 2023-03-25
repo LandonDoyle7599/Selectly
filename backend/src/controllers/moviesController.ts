@@ -7,5 +7,4 @@ const getMovieList =
     (client: PrismaClient): RequestHandler => 
     async (req : RequestWithJWTBody, res) => {
 
-
     }

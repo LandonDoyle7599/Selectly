@@ -100,21 +100,21 @@ export const Dashboard: FC = () => {
       <h1>Pending Votes</h1>
       {votingDecks !== undefined && (
         <Grid item xs={12} sm={6} md={4} spacing={1}>
-            <Card sx={{ maxWidth: 345 }} onClick={() => setOpen(true)}>
-                <CardActionArea>
-                    <CardMedia
-                        component="img"
-                        height="140"
-                        image="/static/images/cards/contemplative-reptile.jpg"
-                        alt="green iguana"
-                    />
-                    <CardContent>
-                        <Typography variant="body2" color="text.secondary">
-                            {votingDecks[0]?.title}
-                            </Typography>
-                    </CardContent>
-                </CardActionArea>
-            </Card>
+            {
+              votingDecks?.map((deck) => {
+                  return (
+                      <Card color="purple" sx={{ maxWidth: 345 }} onClick={() => setOpen(true)}>
+                          <CardActionArea>
+                              <CardContent>
+                                  <Typography variant="body2" color="text.secondary">
+                                      {deck.title}
+                                  </Typography>
+                              </CardContent>
+                          </CardActionArea>
+                      </Card>
+                  );
+              })
+            }
         </Grid>
       )}
     </Stack>

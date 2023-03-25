@@ -50,7 +50,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
       <Stack sx={{maxHeight: "70%", maxWidth: "20%", height: "100vh", width: "100vw"}}>
       <Card>
         <CardContent sx={{alignItems: "center"}}>
-            <img width="100vw" height="100%" src={activeCard?.photoURL ? activeCard.photoURL : null} />
+            <img width="100vw" height="100%" src={activeCard?.photoURL ? activeCard.photoURL : ""} />
           <Typography variant="h4">{activeCard?.title}</Typography>
           <Typography variant="body1" whiteSpace={"pre-line"}>{activeCard?.content}</Typography>
         </CardContent>

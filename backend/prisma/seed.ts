@@ -46,24 +46,30 @@ async function main() {
   });
   let card1 = await client.card.create({
     data: {
-      title: "Card 1",
-      content: "Card 1 description",
+      title: "Settlers of Catan",
+      content: "Makes me want to die",
     },
   });
   let card2 = await client.card.create({
     data: {
-      title: "Card 2",
-      content: "Card 2 description",
+      title: "Dice Forge",
+      content: "Anvil not included",
+    },
+  });
+  let card3 = await client.card.create({
+    data: {
+      title: "Monopoly",
+      content: "I hate this game",
     },
   });
   let deck = await client.votingDeck.create({
     data: {
-      title: "Test Deck",
+      title: "My Board Games",
       users: {
         connect: [{ id: bob.id }, { id: steve.id }],
       },
       cards: {
-        connect: [{ id: card1.id }, { id: card2.id }],
+        connect: [{ id: card1.id }, { id: card2.id }, { id: card3.id }],
       },
       status: "active",
       type: "custom",

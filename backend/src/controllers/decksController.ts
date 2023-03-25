@@ -304,29 +304,49 @@ const getOtherIncompleteDecks =
     res.json(decks);
   };
 
-// const makeCustomDeck =
-//   (client: PrismaClient): RequestHandler =>
-//   async (req: RequestWithJWTBody, res) => {
-//     const { cards, title, type } = req.body as CustomDeckProps;
-//     const userId = req.jwtBody?.userId;
-//     const newCards: Card[] = [];
-//     for (let i = 0; i < cards.length; i++) {
-//       const card = await client.card.create({
-//         data: {
-//           title: cards[i].title,
-//           content: cards[i].content,
-//         }
-//       })
-//       newCards.push(card);
-//     }
-//     const newDeck = await client.votingDeck.create({
-//       data: {
-//         title,
-//         type,
+const makeCustomDeck =
+  (client: PrismaClient): RequestHandler =>
+  async (req: RequestWithJWTBody, res) => {
+    const { cards, title, type } = req.body as CustomDeckProps;
+    const userId = req.jwtBody?.userId;
+    const newCards: Card[] = [];
+    const newDeck = await client.votingDeck.create({
+      data: {
+        title,
+        type,
+        status: "active",
+        users: { connect: { id: userId } },
+      }
+    });
+    for (let i = 0; i < cards.length; i++) {
+      const card = await client.card.create({
+        data: {
+          title: cards[i].title,
+          content: cards[i].content,
+        }
+      })
+      await client.votingDeck.update({
+        where: {
+          id: newDeck.id,
+        },
+        data: {
+          cards: { connect: { id: card.id } },
+        },
+      });
+      newCards.push(card);
+    }
 
-//     })
-    
-//   }
+    const deck = await client.votingDeck.findUnique({
+      where: {
+        id: newDeck.id,
+      },
+      include: {
+        users: true,
+        cards: true,
+      },
+    });
+    res.json({ deck })
+  }
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },

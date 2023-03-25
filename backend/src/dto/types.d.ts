@@ -23,3 +23,8 @@ export type CreateUserBody = {
 export type FriendRequestBody = {
     friendEmail: string
 }
+
+export type FriendRequestReponseBody = {
+    friendRequestId: number
+    response: 'accepted' | 'declined'
+}

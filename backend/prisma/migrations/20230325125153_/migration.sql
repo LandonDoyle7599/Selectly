@@ -35,12 +35,12 @@ CREATE TABLE "Card" (
     "content" TEXT NOT NULL,
     "photoURL" TEXT,
     "link" TEXT,
-    "votingDeckId" INTEGER NOT NULL,
-    "customDeckId" INTEGER NOT NULL,
+    "votingDeckId" INTEGER,
+    "customDeckId" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Card_votingDeckId_fkey" FOREIGN KEY ("votingDeckId") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "Card_customDeckId_fkey" FOREIGN KEY ("customDeckId") REFERENCES "CustomDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "Card_votingDeckId_fkey" FOREIGN KEY ("votingDeckId") REFERENCES "VotingDeck" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Card_customDeckId_fkey" FOREIGN KEY ("customDeckId") REFERENCES "CustomDeck" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -49,6 +49,7 @@ CREATE TABLE "Vote" (
     "deckId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
     "cardId" INTEGER NOT NULL,
+    "vote" BOOLEAN NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Vote_deckId_fkey" FOREIGN KEY ("deckId") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
@@ -77,11 +78,19 @@ CREATE TABLE "_Friends" (
 );
 
 -- CreateTable
-CREATE TABLE "_UserToVotingDeck" (
+CREATE TABLE "_IncompleteVotes" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL,
-    CONSTRAINT "_UserToVotingDeck_A_fkey" FOREIGN KEY ("A") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_UserToVotingDeck_B_fkey" FOREIGN KEY ("B") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "_IncompleteVotes_A_fkey" FOREIGN KEY ("A") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_IncompleteVotes_B_fkey" FOREIGN KEY ("B") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "_FinishedVotes" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL,
+    CONSTRAINT "_FinishedVotes_A_fkey" FOREIGN KEY ("A") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_FinishedVotes_B_fkey" FOREIGN KEY ("B") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -91,7 +100,13 @@ CREATE UNIQUE INDEX "_Friends_AB_unique" ON "_Friends"("A", "B");
 CREATE INDEX "_Friends_B_index" ON "_Friends"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_UserToVotingDeck_AB_unique" ON "_UserToVotingDeck"("A", "B");
+CREATE UNIQUE INDEX "_IncompleteVotes_AB_unique" ON "_IncompleteVotes"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_UserToVotingDeck_B_index" ON "_UserToVotingDeck"("B");
+CREATE INDEX "_IncompleteVotes_B_index" ON "_IncompleteVotes"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_FinishedVotes_AB_unique" ON "_FinishedVotes"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_FinishedVotes_B_index" ON "_FinishedVotes"("B");

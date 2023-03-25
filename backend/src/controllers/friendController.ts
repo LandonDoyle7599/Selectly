@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
-import { RequestWithJWTBody, FriendRequestBody, FriendRequestReponseBody, UnfriendBody } from '../dto/types'
+import { RequestWithJWTBody } from '../dto/types'
+import {FriendRequestBody, FriendRequestReponseBody, UnfriendBody } from '../dto/friendTypes'
 import { controller } from '../lib/controller'
 
 const seeFriends =
@@ -16,6 +17,7 @@ const seeFriends =
                 }
             })
             res.json({ friends: user?.friends })
+            return
         }
 
 const requestFriend =
@@ -29,6 +31,23 @@ const requestFriend =
                     email: friendEmail
                 }
             })
+
+            const user = await client.user.findUnique({
+                where: {
+                    id: userId
+                }, 
+                include: {
+                    friends: true
+                }
+            })
+
+            // Check if the user is already friends with the person they are trying to add
+            const alreadyFriends = user?.friends?.some(currFriend => currFriend.id === friend?.id)
+            if (alreadyFriends) {
+                res.status(404).json({ message: "You are already friends with this user." })
+                return
+            }
+
             const reverseRequest = await client.friendRequest.findFirst({
                 where: {
                     senderId: friend?.id,
@@ -36,24 +55,23 @@ const requestFriend =
                     status: "pending"
                 }
             })
-            // If the other person has already sent the current user a request, accept it
+            // If the other person has already sent the current user a request, accept it and delete it from the database
             if (reverseRequest) {
                 makeFriends(userId, friend?.id, client)
-                await client.friendRequest.findFirst({
+                await client.friendRequest.delete({
                     where: {
-                        senderId: friend?.id,
-                        receiverId: userId,
-                        status: "accepted"
+                        id: reverseRequest.id
                     }
                 })
-                res.json({})
+                res.json({});
+                return;
             } else {
                 //Don't allow a user to send a friend request to themselves or make repeat requests
                 const friendRequests = await client.friendRequest.findMany({
                     where: { 
                         senderId: userId,
                         receiverId: friend?.id,
-                        status: "pending" || "accepted"
+                        status: "pending"
                     }
                 })
     
@@ -78,6 +96,7 @@ const requestFriend =
                     }
                 })
                 res.json({ friendRequest })
+                return;
             }
         }
 
@@ -104,6 +123,7 @@ const outgoingRequests =
             })
 
             res.json({ friendRequests })
+            return;
         }
 
 const incomingRequests =
@@ -129,6 +149,7 @@ const incomingRequests =
             })
 
             res.json({ friendRequests })
+            return;
         }
 
 const respondToRequest =
@@ -142,21 +163,21 @@ const respondToRequest =
                 }
             })
             if (friendRequest) {
-                const newFriendRequest = await client.friendRequest.update({
+                const newFriendRequest = await client.friendRequest.delete({
                     where: {
                         id: friendRequestId,
                     },
-                    data: {
-                        status: response
-                    }
                 })
                 if (response === "accepted" && friendRequest) {
+                    newFriendRequest.status = "accepted";
                     const friendId = friendRequest.senderId;
                     makeFriends(userId, friendId, client)              
                 }
                 res.json({ newFriendRequest })
+                return;
             } else {
-                res.json({message: "Friend request not found"})
+                res.json({message: "Friend request not found"});
+                return;
             }
         }
 
@@ -202,6 +223,7 @@ const unfriend =
                 }
             })
             res.json({})
+            return;
         }
 
 const cancelRequest = 
@@ -214,6 +236,7 @@ const cancelRequest =
                 }
             })
             res.json({})
+            return;
         }
 
 async function makeFriends(userId: number | undefined, friendId: number | undefined, client: PrismaClient) {
@@ -244,6 +267,7 @@ async function makeFriends(userId: number | undefined, friendId: number | undefi
         }
     })
 
+
 }
 
 export const friendController = controller('friends', [
@@ -252,6 +276,6 @@ export const friendController = controller('friends', [
     { path: '/outgoing', endpointBuilder: outgoingRequests, method: 'get' },
     { path: '/incoming', endpointBuilder: incomingRequests, method: 'get' },
     { path: '/response', endpointBuilder: respondToRequest, method: 'post' },
-    { path: '/cancel', endpointBuilder: cancelRequest, method: 'delete' },
+    { path: '/cancel', endpointBuilder: cancelRequest, method: 'post' },
     { path: '/unfriend', endpointBuilder: unfriend, method: 'post' },
 ])

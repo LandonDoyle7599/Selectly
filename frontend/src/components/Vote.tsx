@@ -1,6 +1,6 @@
 import { useApi } from "../hooks/useApi";
 import { Card, User, VotingDeck } from "../models";
-import "../styles/Vote.css";
+import "../styles/voteStyles.css";
 import { ItemCard } from "./ItemCard";
 
 export type VoteType = "like" | "dislike";
@@ -22,13 +22,14 @@ export const Vote = (props: VoteProps) => {
 
   const handleVote = async (vote: VoteType, cardID: number) => {
     // TODO: Verify this endpoint
-    const res = await api.post("vote", {
-      vote,
-      user: user.id,
-      deck: deck.id,
-      card: cardID,
-    });
-    console.log(res);
+    console.log(`Card: ${cardID} was ${vote}d by ${user.firstName}`);
+    // const res = await api.post("vote", {
+    //   vote,
+    //   user: user.id,
+    //   deck: deck.id,
+    //   card: cardID,
+    // });
+    // console.log(res);
   };
 
   return (
@@ -36,9 +37,10 @@ export const Vote = (props: VoteProps) => {
       <div className="deck-container">
         {deck.cards.map((card) => (
           <ItemCard
+            key={card.id}
             title={card.title}
             description={card.content}
-            imageURL={card.photoURL}
+            photoURL={card.photoURL}
             handleVote={handleVote}
             id={card.id}
           ></ItemCard>

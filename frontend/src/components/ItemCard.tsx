@@ -15,7 +15,7 @@ import { handleVoteProps, VoteType } from "./Vote";
 export type CardProps = {
   title: string;
   description: string;
-  imageURL: string | null;
+  photoURL: string | null;
   id: number;
   handleVote: (vote: VoteType, cardID: number) => void;
 };
@@ -23,13 +23,13 @@ export type CardProps = {
 export const ItemCard = (props: CardProps) => {
   validateAuth();
 
-  const { title, description, imageURL, id, handleVote } = props;
+  const { title, description, photoURL, id, handleVote } = props;
   return (
     <Stack>
       <Card>
         <CardMedia
           sx={{ height: "100%" }}
-          image={imageURL ? imageURL : " "}
+          image={photoURL ? photoURL : " "}
           title={title}
         />
         <CardContent>

@@ -13,6 +13,7 @@ import { Profile } from "./pages/Profile";
 import { StartVote } from "./pages/StartVote";
 
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import { Results } from "./pages/Results";
 
 const theme = createTheme({
   palette: {
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       {
+        path: "results",
+        element: <Results/>
+      },
+      {
         path: "dashboard",
         element: <Dashboard />,
       },
@@ -78,7 +83,7 @@ const router = createBrowserRouter([
         element: <CreateDeck />,
       },
       {
-        path: "startVote/:type",
+        path: "startvote/:type",
         element: <StartVote />,
       },
 

@@ -21,28 +21,46 @@ import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
 import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
+import { MovieCard } from "../components/MovieCard";
+import { RestaurantCard } from "../components/RestaurantCard";
+import { CustomDeck } from "../components/CustomDeck";
+import { AddCustomDeck } from "../components/AddCustomDeck";
+
 
 export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const [votingDecks, setVotingDecks] = useState<VotingDeck[]>();
+  const [customDecks, setCustomDecks] = useState<VotingDeck[]>();
+  const [selectedDeck, setSelectedDeck] = useState<VotingDeck | undefined>();
 
   const api = useApi();
   const navigate = useNavigate();
   validateAuth();
-
+  
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/home");
   };
-
+  
   useEffect(() => {
+
+    const interval = setInterval(() => {
+
     api.get("decks/waiting/me").then((res) => {
       if (!res.message) {
         setVotingDecks(res);
       }
     });
+
+    api.get("decks/custom/all").then((res) => {
+      if (!res.message) {
+        setCustomDecks(res);
+      }
+    });
+  }, 3000);
+  return () => clearInterval(interval);
   }, []);
 
   const classes = useStyles();

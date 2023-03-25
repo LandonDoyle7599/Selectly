@@ -83,6 +83,10 @@ const vote =
             data: {
               status: "finished"
             },
+            include: {
+              cards: true,
+              votes: true
+            }
           });
           res.json({ finalDeck });
           return;

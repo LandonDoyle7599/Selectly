@@ -8,11 +8,13 @@ import { Services, Genres } from "../enums";
 import { formikTextFieldNumberProps, formikTextFieldProps, removeLeadingUnderscoresAndConvertToIntArray } from "../utils/helperFunctions";
 import { User, VotingDeck } from "../models";
 import { TestVoting } from "../pages/TestVoting";
+import { useLocation } from "react-router-dom";
 
 
-export const StartRestaurant: FC = () => {
+export const StartCustom: FC = () => {
   const navigate = useNavigate();
   const api = useApi();
+  const location = useLocation();
   const [error, setError] = useState<string | null>(null);
   const [friends, setFriends] = useState<User[]>();
   const [votingDeck, setVotingDeck] = useState<VotingDeck>();
@@ -25,28 +27,22 @@ export const StartRestaurant: FC = () => {
         setFriends(res.friends);
         }
     });
+    formik.setFieldValue("id", location.state.id);
     }, []);
 
   const formik = useFormik({
     initialValues: {
-      title: "",
-      quantity: 0,
-      zip: 0,
+      id: 0,
       friends: [],
     },
     validationSchema: yup.object({
-      title: yup.string().required("Required"),
-      quantity: yup.number().required("Required"),
-      zip: yup.number().required("Required"),
       friends: yup.array().min(1).required("Required"),
     }),
     onSubmit: (values, { setSubmitting }) => {
       setError(null);
       api
-        .post("decks/restaurants", {
-          title: values.title,
-        zipcode: values.zip,
-          quantity: values.quantity,
+        .post("decks/custom/start", {
+          id: values.id,
           friends: values.friends,
         })
         .then((res) => {
@@ -69,17 +65,6 @@ export const StartRestaurant: FC = () => {
 
   return (
     <div>
-      <TextField
-        {...formikTextFieldProps(formik, "title", "Title")}
-        label="Title"
-        variant="outlined"
-        />
-        <TextField
-        {...formikTextFieldNumberProps(formik, "quantity", "Quantity")}
-        label="Quantity"
-        variant="outlined"
-        />
-      <TextField {...formikTextFieldNumberProps(formik, "zip", "Zip Code")} label="Zip Code" variant="outlined"/>
         <Select
         value={formik.values.friends}
         multiple

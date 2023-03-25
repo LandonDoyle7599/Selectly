@@ -425,6 +425,7 @@ const getDeckById =
       include: {
         users: true,
         cards: true,
+        votes: true,
       },
     });
     if (!deck) {
@@ -463,8 +464,14 @@ const getMyIncompleteDecks =
   (client: PrismaClient): RequestHandler =>
   async (req: RequestWithJWTBody, res) => {
     const userId = req.jwtBody?.userId;
+    
     const decks = await client.votingDeck.findMany({
       where: {
+        users: {
+          some: {
+            id: userId,
+          },
+        },
         finishedUsers: {
           none: {
             id: userId,
@@ -497,7 +504,7 @@ const getOtherIncompleteDecks =
         users: true,
         cards: true,
       },
-    });
+    });    
     res.json(decks);
   };
 

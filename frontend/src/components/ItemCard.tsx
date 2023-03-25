@@ -15,20 +15,23 @@ import { handleVoteProps, VoteType } from "./Vote";
 export type CardProps = {
   title: string;
   description: string;
-  imageURL: string;
+  imageURL: string | null;
   id: number;
-  handleVote: (vote: VoteType) => void;
+  handleVote: (vote: VoteType, cardID: number) => void;
 };
 
 export const ItemCard = (props: CardProps) => {
-  const navigate = useNavigate();
   validateAuth();
 
   const { title, description, imageURL, id, handleVote } = props;
   return (
     <Stack>
       <Card>
-        <CardMedia sx={{ height: "100%" }} image={imageURL} title={title} />
+        <CardMedia
+          sx={{ height: "100%" }}
+          image={imageURL ? imageURL : " "}
+          title={title}
+        />
         <CardContent>
           <Typography variant="h4">{title}</Typography>
           <Typography variant="body1">{description}</Typography>
@@ -45,7 +48,7 @@ export const ItemCard = (props: CardProps) => {
             }}
             size="small"
             color="primary"
-            onClick={() => handleVote("like")}
+            onClick={() => handleVote("like", id)}
           >
             <ThumbUpIcon htmlColor="#6FC030" />
           </Button>
@@ -58,7 +61,7 @@ export const ItemCard = (props: CardProps) => {
             }}
             size="small"
             color="error"
-            onClick={() => handleVote("dislike")}
+            onClick={() => handleVote("dislike", id)}
           >
             <ThumbDownIcon />
           </Button>

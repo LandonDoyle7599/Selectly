@@ -1,5 +1,5 @@
 import { useApi } from "../hooks/useApi";
-import { User, VotingDeck } from "../models";
+import { Card, User, VotingDeck } from "../models";
 import { ItemCard } from "./ItemCard";
 
 export type VoteType = "like" | "dislike";
@@ -10,26 +10,25 @@ export type handleVoteProps = {
   deck: VotingDeck;
 };
 
-export const Vote = (deck: VotingDeck) => {
+export const Vote = (deck: VotingDeck, user: User) => {
   const api = useApi();
-  const title = "Title";
-  const description = "Description";
-  const imageURL = "https://picsum.photos/200/300";
-  const id = 1;
-  const user = { id: 1, username: "test" };
 
-  const handleVote = (vote: VoteType) => {
+  const handleVote = (vote: VoteType, cardID: number) => {
     // TODO: Verify this endpoint
-    api.post("vote", { vote, user, deck });
+    api.post("vote", { vote, user: user.id, deck: deck.id, card: cardID });
   };
 
   return (
-    <ItemCard
-      title={title}
-      description={description}
-      imageURL={imageURL}
-      handleVote={handleVote}
-      id={id}
-    ></ItemCard>
+    <>
+      {deck.cards.map((card) => (
+        <ItemCard
+          title={card.title}
+          description={card.content}
+          imageURL={card.photoURL}
+          handleVote={handleVote}
+          id={card.id}
+        ></ItemCard>
+      ))}
+    </>
   );
 };

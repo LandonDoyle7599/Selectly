@@ -9,7 +9,12 @@ import * as yup from "yup";
 import { Friends } from "../components/Friends";
 import { useApi } from "../hooks/useApi";
 import { FriendRequest, User } from "../models";
-import { buttonSx, primaryColor, secondaryColor } from "../styles/FormStyle";
+import {
+  buttonSx,
+  liteBackground,
+  primaryColor,
+  secondaryColor,
+} from "../styles/FormStyle";
 import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Profile: FC = () => {
@@ -135,7 +140,7 @@ export const Profile: FC = () => {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ marginLeft: "10", alignItems: "right" }}
+            sx={{ marginLeft: "10", marginRight: "5" }}
             onClick={() => setOpenUpdateUser(true)}
           >
             Update Account Info
@@ -177,9 +182,8 @@ export const Profile: FC = () => {
           </Button>
         </div>
       </Dialog>
-      <Card>
-        <Friends></Friends>
-      </Card>
+
+      <Friends></Friends>
     </>
   );
 };

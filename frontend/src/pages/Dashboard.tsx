@@ -1,9 +1,17 @@
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
-import { Button, IconButton, Popover, Popper, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  IconButton,
+  Popover,
+  Popper,
+  Typography,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateAuth } from "../hooks/checkAuth";
+import "../styles/dashboard.css";
 
 export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
@@ -59,10 +67,29 @@ export const Dashboard: FC = () => {
           </Stack>
         </Popover>
       </Stack>
-      <Button onClick={() => navigate("/profile")}>Profile</Button>
-      <Button onClick={() => navigate("/history")}>History</Button>
-      <Button onClick={() => navigate("/createDeck")}>Deck creation</Button>
-      <Button onClick={() => navigate("/startVoting")}>Start voting</Button>
+      <Card
+        sx={{
+          p: 2,
+          m: 4,
+          width: "70%",
+        }}
+      >
+        <Button className="button-dash" onClick={() => navigate("/profile")}>
+          Profile
+        </Button>
+        <Button className="button-dash" onClick={() => navigate("/history")}>
+          History
+        </Button>
+        <Button className="button-dash" onClick={() => navigate("/createDeck")}>
+          Deck creation
+        </Button>
+        <Button
+          className="button-dash"
+          onClick={() => navigate("/startVoting")}
+        >
+          Start voting
+        </Button>
+      </Card>
     </Stack>
   );
 };

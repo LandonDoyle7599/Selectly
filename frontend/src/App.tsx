@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import {
+    createBrowserRouter,
+    RouterProvider,
+    useLocation,
+} from 'react-router-dom'
+import CreateAccount from './pages/CreateAccount'
+import { ApiContext } from './contexts/api'
+import { Api } from './lib/api'
+import { Login } from './pages/Login'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const router = createBrowserRouter([
+    {
+        path: '/',
+        children: [
+            {
+                path: 'login',
+                element: <Login />,
+            },
+            {
+                path: 'create-account',
+                element: <CreateAccount />,
+            },
+        ],
+    },
+])
+
+export const App = () => {
+    const [api, setApi] = useState(new Api())
+
+    return (
+        <>
+            <ApiContext.Provider value={api}>
+                <RouterProvider router={router} />
+            </ApiContext.Provider>
+        </>
+    )
 }
-
-export default App;

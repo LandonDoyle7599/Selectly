@@ -97,17 +97,6 @@ const makeMovieDeck =
     const { services, quantity, genres, title, friends } =
       req.body as MovieDeckCreationBody;
 
-    const newDeck = await createNewVotingDeck({
-      client,
-      userId,
-      type: "movie",
-      title,
-      friends,
-    });
-    if (!newDeck) {
-      res.status(404).json({ message: "Invalid Input" });
-      return;
-    }
 
     // build url to request to api for list of titles
     const url = "https://api.watchmode.com/v1/";
@@ -160,6 +149,18 @@ const makeMovieDeck =
         });
       if (movieIds.length < 1) {
         res.status(404).json({ message: "No movies found" });
+        return;
+      }
+
+      const newDeck = await createNewVotingDeck({
+        client,
+        userId,
+        type: "movie",
+        title,
+        friends,
+      });
+      if (!newDeck) {
+        res.status(404).json({ message: "Invalid Input" });
         return;
       }
 

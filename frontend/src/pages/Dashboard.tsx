@@ -3,20 +3,19 @@ import { Button, IconButton, Popover, Popper, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { validateAuth } from '../hooks/checkAuth';
 
 
 export const Dashboard: FC = () => {
     const [open , setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const navigate = useNavigate();
+    validateAuth()
 
     const logout = () => {
         localStorage.removeItem("token");
         navigate("/home");
-    }
-
-    useEffect(() => {
-        
+    };
 
     return(
         <Stack sx={{width:"100vw", height:"100vh"}} direction="column">

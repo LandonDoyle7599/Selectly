@@ -35,12 +35,12 @@ CREATE TABLE "Card" (
     "content" TEXT NOT NULL,
     "photoURL" TEXT,
     "link" TEXT,
-    "votingDeckId" INTEGER NOT NULL,
-    "customDeckId" INTEGER NOT NULL,
+    "votingDeckId" INTEGER,
+    "customDeckId" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Card_votingDeckId_fkey" FOREIGN KEY ("votingDeckId") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "Card_customDeckId_fkey" FOREIGN KEY ("customDeckId") REFERENCES "CustomDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "Card_votingDeckId_fkey" FOREIGN KEY ("votingDeckId") REFERENCES "VotingDeck" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Card_customDeckId_fkey" FOREIGN KEY ("customDeckId") REFERENCES "CustomDeck" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable

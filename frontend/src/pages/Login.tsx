@@ -96,7 +96,7 @@ export const Login: FC = () => {
                 variant="contained"
                 onClick={formik.submitForm}
                 loading={formik.isSubmitting}
-                sx={{ mx: 2, backgroundColor: theme.palette.primary.main }}
+                sx={{ mx: 2, backgroundColor: "#e1bee7" }}
               >
                 Login
               </LoadingButton>

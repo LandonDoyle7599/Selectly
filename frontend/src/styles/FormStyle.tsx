@@ -1,5 +1,8 @@
 import { makeStyles } from "@material-ui/core/styles";
 
+export const primaryColor = "#6a1b9a";
+export const secondaryColor = "#ab47bc";
+
 export const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",

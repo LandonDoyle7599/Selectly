@@ -5,7 +5,7 @@ import { VotingDeck } from "../models";
 
 export interface CustomDeckProps {
     title: string;
-    nav: string
+    id: number
 }
 
 export const CustomDeck = (props: CustomDeckProps) => {
@@ -18,7 +18,7 @@ export const CustomDeck = (props: CustomDeckProps) => {
     }
 
     return (
-        <Card color={generateColor(9)} sx={{ maxWidth: 345 }} onClick={() => navigate(`/startvote/custom/${props.nav}`)}>
+        <Card color={generateColor(9)} sx={{ maxWidth: 345 }} onClick={() => navigate(`/startvote/custom`, {state: {id: props.id}})}>
             <CardActionArea>
                 <CardContent>
                     <Typography variant="body2" color="text.secondary">

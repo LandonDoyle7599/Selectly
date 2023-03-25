@@ -92,7 +92,7 @@ export const Dashboard: FC = () => {
             {
               customDecks?.map((deck) => {
                   return (
-                      <CustomDeck title={deck.title} nav={""}/>
+                      <CustomDeck title={deck.title} id={deck.id}/>
                   );
               })
             }

@@ -21,23 +21,11 @@ type PickItemProps = {
 export const PickItem = (props: PickItemProps) => {
   const { handleVote, id } = props;
   return (
-    <Card>
+    <div className="card-swiper-button">
       <CardActions>
         <Button
           sx={{
-            ":hover": {
-              bgcolor: "#BDE89B",
-              color: "6FC030",
-            },
-          }}
-          size="small"
-          color="primary"
-          onClick={() => handleVote("like", id)}
-        >
-          <ThumbUpIcon htmlColor="#6FC030" />
-        </Button>
-        <Button
-          sx={{
+            boxShadow: 3,
             ":hover": {
               bgcolor: "#E8AD9B",
               color: "primary",
@@ -49,7 +37,21 @@ export const PickItem = (props: PickItemProps) => {
         >
           <ThumbDownIcon />
         </Button>
+        <Button
+          sx={{
+            boxShadow: 3,
+            ":hover": {
+              bgcolor: "#BDE89B",
+              color: "6FC030",
+            },
+          }}
+          size="small"
+          color="primary"
+          onClick={() => handleVote("like", id)}
+        >
+          <ThumbUpIcon htmlColor="#6FC030" />
+        </Button>
       </CardActions>
-    </Card>
+    </div>
   );
 };

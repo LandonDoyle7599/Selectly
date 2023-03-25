@@ -24,7 +24,8 @@ model VotingDeck {
 
 model CustomDeck {
     id  Int @id @default(autoincrement())
-    user User @relation(fields: [id], references: [id])
+    userId Int
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     cards Card[]
     title String
     type String
@@ -53,8 +54,10 @@ model Card {
     content   String
     photoURL  String?
     link      String?
-    votingDeck      VotingDeck @relation(fields: [id], references: [id])
-    customDeck      CustomDeck @relation(fields: [id], references: [id])
+    votingDeckId    Int
+    customDeckId Int
+    votingDeck      VotingDeck @relation(fields: [votingDeckId], references: [id], onDelete: Cascade)
+    customDeck      CustomDeck @relation(fields: [customDeckId], references: [id], onDelete: Cascade)
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
     votes     Vote[]
@@ -62,9 +65,12 @@ model Card {
 
 model Vote {
     id        Int        @id @default(autoincrement())
-    deck      VotingDeck @relation(fields: [id], references: [id])
-    user      User       @relation(fields: [id], references: [id])
-    card      Card       @relation(fields: [id], references: [id])
+    deckId    Int
+    userId    Int
+    cardId    Int
+    deck      VotingDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+    user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    card      Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
 }
@@ -72,8 +78,10 @@ model Vote {
 model FriendRequest {
     id        Int      @id @default(autoincrement())
     status    String
-    sender    User     @relation("Sender", fields: [id], references: [id])
-    receiver  User     @relation("Receiver", fields: [id], references: [id])
+    senderId  Int
+    receiverId Int
+    sender    User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+    receiver  User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

@@ -1,13 +1,25 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Container, Card, CardContent, Alert, Button, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import {
+  Alert,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Divider,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useFormik } from "formik";
 import React, { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {useFormik } from "formik";
 import * as yup from "yup";
-import { formikTextFieldProps } from "../utils/helperFunctions";
-import { LoadingButton } from "@mui/lab";
 import { useApi } from "../hooks/useApi";
 import { useAuth } from "../hooks/useAuth";
+import { buttonSx, primaryColor, secondaryColor } from "../styles/FormStyle";
+import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Login: FC = () => {
   const navigate = useNavigate();
@@ -20,7 +32,7 @@ export const Login: FC = () => {
 
   const navigateToHome = () => {
     navigate("/home");
-  }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -37,12 +49,13 @@ export const Login: FC = () => {
     }),
     onSubmit: (values, { setSubmitting }) => {
       setError(null);
-      api.post("users", {
-        firstName: values.firstName, 
-        lastName: values.lastName, 
-        password: values.password, 
-        email: values.email
-      })
+      api
+        .post("users", {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          password: values.password,
+          email: values.email,
+        })
         .then((res) => {
           if (res.token) {
             window.localStorage.setItem("token", res.token);
@@ -59,48 +72,61 @@ export const Login: FC = () => {
     <Container maxWidth="sm">
       <Card sx={{ mt: 24 }}>
         <CardContent>
-        <Stack gap="2rem" justifyContent="center">
-      <Stack direction="row">
-        <IconButton>
-          <ArrowBackIcon onClick={navigateToHome} />
-        </IconButton>
-        <Typography variant="h4" align="center" width="100%" sx={{ mr: 5 }}>
-          Create Account
-        </Typography>
-      </Stack>
-      <TextField
-        {...formikTextFieldProps(formik, "firstName", "First Name")}
-      />
-      <TextField
-        {...formikTextFieldProps(formik, "lastName", "Last Name")}
-      />
-      <TextField
-        {...formikTextFieldProps(formik, "email", "Email")}
-        helperText={formik.touched.email && formik.errors.email}
-      />
-      <TextField
-        {...formikTextFieldProps(formik, "password", "Password")}
-        helperText={formik.touched.password && formik.errors.password}
-        type="password"
-      />
+          <Stack gap="2rem" justifyContent="center">
+            <Stack direction="row">
+              <IconButton>
+                <ArrowBackIcon onClick={navigateToHome} />
+              </IconButton>
+              <Typography
+                variant="h4"
+                align="center"
+                width="100%"
+                sx={{ mr: 5 }}
+              >
+                Create Account
+              </Typography>
+            </Stack>
+            <TextField
+              {...formikTextFieldProps(formik, "firstName", "First Name")}
+            />
+            <TextField
+              {...formikTextFieldProps(formik, "lastName", "Last Name")}
+            />
+            <TextField
+              {...formikTextFieldProps(formik, "email", "Email")}
+              helperText={formik.touched.email && formik.errors.email}
+            />
+            <TextField
+              {...formikTextFieldProps(formik, "password", "Password")}
+              helperText={formik.touched.password && formik.errors.password}
+              type="password"
+            />
 
-      {error && <Alert severity="error">{error}</Alert>}
-      <Stack direction="row" justifyContent="center">
-        <LoadingButton
-          variant="contained"
-          onClick={formik.submitForm}
-          loading={formik.isSubmitting}
-        >
-          Create Account
-        </LoadingButton>
-      </Stack>
+            {error && <Alert severity="error">{error}</Alert>}
+            <Stack direction="row" justifyContent="center">
+              <LoadingButton
+                variant="contained"
+                onClick={formik.submitForm}
+                loading={formik.isSubmitting}
+                sx={{
+                  backgroundColor: primaryColor,
+                  ":hover": { backgroundColor: secondaryColor },
+                }}
+              >
+                Create Account
+              </LoadingButton>
+            </Stack>
 
-      <Stack direction="row" gap="1rem" justifyContent="center">
-        <Button variant="text" onClick={() => navigate("/login")} sx={{ mx: 2 }}>
-          Login
-        </Button>
-      </Stack>
-    </Stack>
+            <Stack direction="row" gap="1rem" justifyContent="center">
+              <Button
+                variant="text"
+                onClick={() => navigate("/login")}
+                sx={{ ...buttonSx, color: "white" }}
+              >
+                Login
+              </Button>
+            </Stack>
+          </Stack>
         </CardContent>
       </Card>
     </Container>

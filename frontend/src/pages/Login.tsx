@@ -15,8 +15,12 @@ export const Login: FC = () => {
   const api = useApi();
 
   const navigateToHome = () => {
-    navigate("/dashboard");
+    navigate("/home");
   };
+
+  const navigateToDashboard = () => {
+    navigate("/dashboard")
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -33,7 +37,7 @@ export const Login: FC = () => {
         .then((res) => {
           if (res.token) {
             window.localStorage.setItem("token", res.token);
-            navigateToHome();
+            navigateToDashboard();
           } else {
             setError(res.message);
           }

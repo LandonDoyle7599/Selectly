@@ -43,3 +43,7 @@ export function roundToTwoDecimals(number: number): number {
     };
   }
 
+  export function removeLeadingUnderscore(str: string): string {
+    return str.replace(/^_/, "");
+  }
+

@@ -183,18 +183,13 @@ export const Friends = () => {
   };
 
   const sendFriendRequest = () => {
-    api
-      .post("friends/invite", { friendEmail: friendsEmail })
-      .then((res) => {
-        if (res.friendRequest) {
-          setSentFriendRequests(sentFriendRequests?.concat(res.friendRequest));
-        } else {
-          throw new Error(res.message);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
+    api.post("friends/invite", { friendEmail: friendsEmail }).then((res) => {
+      if (res.friendRequest) {
+        setSentFriendRequests(sentFriendRequests?.concat(res.friendRequest));
+      } else {
+        console.error(res.message);
+      }
+    });
   };
 
   return (
@@ -239,7 +234,7 @@ export const Friends = () => {
         </Box>
 
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h5">Sent Friend Requests</Typography>
+          <Typography variant="h5">Outgoing Requests</Typography>
           {sentFriendRequests?.map((friendRequest) => (
             <Box
               key={friendRequest.id}
@@ -269,7 +264,7 @@ export const Friends = () => {
         </Box>
 
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h5">Friend Requests</Typography>
+          <Typography variant="h5">Incoming Requests</Typography>
           {receivedFriendRequests?.map((friendRequest) => (
             <Box
               key={friendRequest.id}

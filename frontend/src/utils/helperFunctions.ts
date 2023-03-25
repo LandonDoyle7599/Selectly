@@ -43,3 +43,9 @@ export function roundToTwoDecimals(number: number): number {
     };
   }
 
+//Function to remove leading underscores from array of strings and convert to int array
+export function removeLeadingUnderscoresAndConvertToIntArray(
+  array: string[]
+): number[] {
+  return array.map((item) => parseInt(item.replace(/^_/, "")));
+}

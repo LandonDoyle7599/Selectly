@@ -18,7 +18,7 @@ export class Api {
       },
     };
 
-    if (method === "post" || method === "put") {
+    if (method === "post" || method === "put" || method === "del") {
       options.body = JSON.stringify({ ...body });
     }
 
@@ -38,7 +38,7 @@ export class Api {
     return this.makeRequest(url, "put", body);
   }
 
-  del(url: string) {
-    return this.makeRequest(url, "del");
+  del(url: string, body: Record<string, any>) {
+    return this.makeRequest(url, "del", body);
   }
 }

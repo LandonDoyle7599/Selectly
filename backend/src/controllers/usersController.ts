@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
-import { RequestWithJWTBody, LoginBody, CreateUserBody } from '../dto/types'
+import { RequestWithJWTBody } from '../dto/types'
+import { CreateUserBody, LoginBody, UpdateUserBody } from '../dto/userTypes'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { controller } from '../lib/controller'
@@ -22,7 +23,7 @@ const createUser =
             res.status(400).json({ message: 'Email already exists' })
             return
         }
-
+        console.log('password', password)
         const passwordHash = await bcrypt.hash(password, 10)
         const user = await client.user.create({
             data: {
@@ -46,6 +47,32 @@ const createUser =
             res.json({ user, token })
         }
     }
+
+const updateUser =
+    (client: PrismaClient): RequestHandler =>
+        async (req: RequestWithJWTBody, res) => {
+            const { firstName, lastName, email, password } = req.body as UpdateUserBody
+            const userId = req.jwtBody?.userId
+
+            const oldUser = await client.user.findUnique({
+                where: {
+                    id: userId
+                }
+            })
+            const oldPasswordHash = oldUser?.passwordHash
+    
+            const user = await client.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    firstName,
+                    lastName,
+                    passwordHash: password == "" ? oldPasswordHash : await bcrypt.hash(password, 10),
+                },
+            })
+            res.json({ user })
+        }
 
 const login =
     (client: PrismaClient): RequestHandler =>
@@ -100,6 +127,7 @@ const getMe =
 
 export const usersController = controller('users', [
     { path: '/me', endpointBuilder: getMe, method: 'get' },
+    { path: '/update', endpointBuilder: updateUser, method: 'post' },
     { path: '/', method: 'post', endpointBuilder: createUser, skipAuth: true },
     { path: '/login', method: 'post', endpointBuilder: login, skipAuth: true },
 ])

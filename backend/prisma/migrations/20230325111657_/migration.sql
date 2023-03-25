@@ -11,9 +11,10 @@ CREATE TABLE "VotingDeck" (
 -- CreateTable
 CREATE TABLE "CustomDeck" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "type" TEXT NOT NULL,
-    CONSTRAINT "CustomDeck_id_fkey" FOREIGN KEY ("id") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "CustomDeck_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -34,30 +35,37 @@ CREATE TABLE "Card" (
     "content" TEXT NOT NULL,
     "photoURL" TEXT,
     "link" TEXT,
+    "votingDeckId" INTEGER,
+    "customDeckId" INTEGER,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Card_id_fkey" FOREIGN KEY ("id") REFERENCES "VotingDeck" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Card_id_fkey" FOREIGN KEY ("id") REFERENCES "CustomDeck" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Card_votingDeckId_fkey" FOREIGN KEY ("votingDeckId") REFERENCES "VotingDeck" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Card_customDeckId_fkey" FOREIGN KEY ("customDeckId") REFERENCES "CustomDeck" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Vote" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "deckId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "cardId" INTEGER NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Vote_id_fkey" FOREIGN KEY ("id") REFERENCES "VotingDeck" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Vote_id_fkey" FOREIGN KEY ("id") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Vote_id_fkey" FOREIGN KEY ("id") REFERENCES "Card" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Vote_deckId_fkey" FOREIGN KEY ("deckId") REFERENCES "VotingDeck" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Vote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "Vote_cardId_fkey" FOREIGN KEY ("cardId") REFERENCES "Card" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "FriendRequest" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "status" TEXT NOT NULL,
+    "senderId" INTEGER NOT NULL,
+    "receiverId" INTEGER NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "FriendRequest_id_fkey" FOREIGN KEY ("id") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "FriendRequest_id_fkey" FOREIGN KEY ("id") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "FriendRequest_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "FriendRequest_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable

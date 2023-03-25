@@ -11,24 +11,25 @@ datasource db {
 }
 
 model VotingDeck {
-    id        Int      @id @default(autoincrement())
-    users     User[]
-    cards     Card[]
-    status    String
-    votes     Vote[]
-    title     String
-    type      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id            Int      @id @default(autoincrement())
+    users         User[]   @relation("IncompleteVotes")
+    finishedUsers User[]   @relation("FinishedVotes")
+    cards         Card[]
+    status        String
+    votes         Vote[]
+    title         String
+    type          String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 }
 
 model CustomDeck {
-    id  Int @id @default(autoincrement())
+    id     Int    @id @default(autoincrement())
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    cards Card[]
-    title String
-    type String
+    cards  Card[]
+    title  String
+    type   String
 }
 
 model User {
@@ -41,47 +42,49 @@ model User {
     friendsOf              User[]          @relation("Friends")
     createdAt              DateTime        @default(now())
     updatedAt              DateTime        @updatedAt
-    votingDeck             VotingDeck[]
+    incompleteVotingDeck   VotingDeck[]    @relation("IncompleteVotes")
+    completedVotingDeck    VotingDeck[]    @relation("FinishedVotes")
     customDeck             CustomDeck[]
     votes                  Vote[]
-    sentFriendRequests     FriendRequest[] @relation("Sender")
-    receivedFriendRequests FriendRequest[] @relation("Receiver")
+    friendRequests         FriendRequest[] @relation("Sender")
+    friendRequestsReceived FriendRequest[] @relation("Receiver")
 }
 
 model Card {
-    id        Int        @id @default(autoincrement())
-    title     String
-    content   String
-    photoURL  String?
-    link      String?
-    votingDeckId    Int
-    customDeckId Int
-    votingDeck      VotingDeck @relation(fields: [votingDeckId], references: [id], onDelete: Cascade)
-    customDeck      CustomDeck @relation(fields: [customDeckId], references: [id], onDelete: Cascade)
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-    votes     Vote[]
+    id           Int         @id @default(autoincrement())
+    title        String
+    content      String
+    photoURL     String?
+    link         String?
+    votingDeckId Int?
+    customDeckId Int?
+    votingDeck   VotingDeck? @relation(fields: [votingDeckId], references: [id])
+    customDeck   CustomDeck? @relation(fields: [customDeckId], references: [id])
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+    votes        Vote[]
 }
 
 model Vote {
     id        Int        @id @default(autoincrement())
-    deckId    Int
-    userId    Int
-    cardId    Int
     deck      VotingDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
     user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
     card      Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
+    deckId    Int
+    userId    Int
+    cardId    Int
+    vote      Boolean
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
 }
 
 model FriendRequest {
-    id        Int      @id @default(autoincrement())
-    status    String    
-    senderId  Int
+    id         Int      @id @default(autoincrement())
+    status     String
+    sender     User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+    receiver   User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    senderId   Int
     receiverId Int
-    sender    User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
-    receiver  User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }

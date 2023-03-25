@@ -252,6 +252,7 @@ const getDeckById =
 const getHistory =
   (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
+      
       const userId = req.jwtBody?.userId;
       const decks = await client.votingDeck.findMany({
         where: {
@@ -267,7 +268,9 @@ const getHistory =
           cards: true,
         },
       });
-      res.json(decks);
+      console.log(decks);
+      
+      res.json({decks});
     }
 
 const getMyIncompleteDecks =
@@ -358,9 +361,9 @@ const makeCustomDeck =
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },
-  { path: "/:id", endpointBuilder: getDeckById, method: "get" },
   { path: "/history", endpointBuilder: getHistory, method: "get" },
   { path: "/waiting/me", endpointBuilder: getMyIncompleteDecks, method: "get" },
   { path: "/waiting/others", endpointBuilder: getOtherIncompleteDecks, method: "get" },
   { path: "/custom", endpointBuilder: makeCustomDeck, method: "post" },
+  { path: "/:id", endpointBuilder: getDeckById, method: "get" },
 ]);

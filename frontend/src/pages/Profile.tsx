@@ -1,4 +1,4 @@
-import { Box, Dialog, Typography } from "@material-ui/core";
+import { Box, Card, Dialog, Typography } from "@material-ui/core";
 import { Button, Modal, TextField } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Stack } from "@mui/system";
@@ -6,9 +6,10 @@ import { useFormik } from "formik";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import { Friends } from "../components/Friends";
 import { useApi } from "../hooks/useApi";
 import { FriendRequest, User } from "../models";
-import { buttonSx } from "../styles/FormStyle";
+import { buttonSx, primaryColor, secondaryColor } from "../styles/FormStyle";
 import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Profile: FC = () => {
@@ -113,296 +114,72 @@ export const Profile: FC = () => {
     return <h1>{error}</h1>;
   }
 
-  const acceptFriendRequest = (friendRequest: FriendRequest) => {
-    api
-      .post("friends/response", {
-        friendRequestId: friendRequest.id,
-        response: "accepted",
-      })
-      .then((res) => {
-        if (res.friendRequest) {
-          setReceivedFriendRequests(
-            receivedFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
-          );
-          setFriends(friends?.concat(friendRequest.sender));
-        } else {
-          throw new Error(res.message);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  };
-
-  const declineFriendRequest = (friendRequest: FriendRequest) => {
-    api
-      .post("friends/response", {
-        friendRequestId: friendRequest.id,
-        response: "declined",
-      })
-      .then((res) => {
-        if (res.friendRequest) {
-          setReceivedFriendRequests(
-            receivedFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
-          );
-        } else {
-          throw new Error(res.message);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  };
-
-  const cancelFriendRequest = (friendRequest: FriendRequest) => {
-    api
-      .post("friends/cancel", { friendRequestId: friendRequest.id })
-      .then((res) => {
-        if (res.friendRequest) {
-          setSentFriendRequests(
-            sentFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
-          );
-        } else {
-          throw new Error(res.message);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  };
-
-  const unfriend = (friend: User) => {
-    api
-      .post("friends/unfriend", { friendId: friend.id })
-      .then((res) => {
-        if (res.friend) {
-          setFriends(friends?.filter((f) => f.id !== friend.id));
-        } else {
-          throw new Error(res.message);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  };
-
-  const sendFriendRequest = () => {
-    api
-      .post("friends/invite", { friendEmail: friendsEmail })
-      .then((res) => {
-        if (res.friendRequest) {
-          setSentFriendRequests(sentFriendRequests?.concat(res.friendRequest));
-        } else {
-          throw new Error(res.message);
-        }
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  };
-
   const handleClose = () => {
     setOpenUpdateUser(false);
   };
 
   return (
     <>
-      <Stack direction={"column"} spacing={2} alignItems="center">
-        <Typography variant="h2">Profile</Typography>
-        <Button onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setOpen(true)}
-        >
-          Send Friend Request
-        </Button>
-        <Modal open={open} onClose={() => setOpen(false)}>
-          <Stack
-            direction={"column"}
-            sx={{
-              width: "100%",
-              height: "100%",
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: theme.palette.background.paper,
-              padding: theme.spacing(4),
-            }}
+      <Typography variant="h2">Profile</Typography>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={() => navigate("/dashboard")}
+      >
+        Go to Dashboard
+      </Button>
+
+      <>
+        <Typography variant="h5">
+          Update Account Info
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ marginLeft: "10", alignItems: "right" }}
+            onClick={() => setOpenUpdateUser(true)}
           >
-            <Typography variant="h2">Send Friend Request</Typography>
-            <TextField
-              label="Email"
-              variant="outlined"
-              value={friendsEmail}
-              onChange={(e) => setFriendsEmail(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={sendFriendRequest}
-            >
-              Send
-            </Button>
-          </Stack>
-        </Modal>
-        <Typography variant="h3">Update Account Info</Typography>
+            Update Account Info
+          </Button>
+        </Typography>
+      </>
 
-        <Button sx={buttonSx}>Update Account Info</Button>
-
-        <Dialog open={openUpdateUser}>
+      <Dialog open={openUpdateUser}>
+        <div style={{ backgroundColor: secondaryColor }}>
           <Typography variant="h3">Update Account Info</Typography>
           <TextField
+            sx={{ margin: "15px" }}
             {...formikTextFieldProps(formik, "firstName", "First Name")}
             variant="outlined"
           />
           <TextField
+            sx={{ margin: "15px" }}
             {...formikTextFieldProps(formik, "lastName", "Last Name")}
             variant="outlined"
           />
+
           <TextField
-            {...formikTextFieldProps(formik, "email", "Email")}
-            variant="outlined"
-            disabled
-          />
-          <TextField
+            sx={{ margin: "15px" }}
             {...formikTextFieldProps(formik, "password", "Password")}
             type="password"
             variant="outlined"
           />
           <Button
+            sx={{
+              margin: "15px",
+              backgroundColor: "whitesmoke",
+              boxShadow: "10",
+            }}
             variant="contained"
-            color="primary"
             disabled={!formik.dirty}
             onClick={() => formik.handleSubmit()}
           >
             Save
           </Button>
-        </Dialog>
-        <Typography variant="h3">Friends</Typography>
-        <h2>Friends</h2>
-        {friends?.map((friend) => {
-          return (
-            <Stack direction={"row"}>
-              <h3>
-                {friend.firstName} {friend.lastName}
-              </h3>
-              <Button onClick={() => unfriend(friend)}>Remove Friend</Button>
-            </Stack>
-          );
-        })}
-        <h2>Sent Friend Requests</h2>
-        {sentFriendRequests?.map((friendRequest) => {
-          return (
-            <Stack direction={"row"}>
-              <h3>
-                {friendRequest.receiver.firstName}{" "}
-                {friendRequest.receiver.lastName}
-              </h3>
-              <Button onClick={() => cancelFriendRequest(friendRequest)}>
-                Cancel
-              </Button>
-            </Stack>
-          );
-        })}
-        <Box sx={{ width: "100%", mt: 4 }}>
-          <Typography variant="h3">Friends</Typography>
-
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="h5">Friends</Typography>
-            {friends?.map((friend) => (
-              <Box
-                key={friend.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  border: 1,
-                  borderColor: "grey.300",
-                  borderRadius: 1,
-                  p: 2,
-                  mt: 2,
-                }}
-              >
-                <Typography variant="body1">
-                  {friend.firstName} {friend.lastName}
-                </Typography>
-                <Button variant="outlined" onClick={() => unfriend(friend)}>
-                  Remove Friend
-                </Button>
-              </Box>
-            ))}
-          </Box>
-
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h5">Sent Friend Requests</Typography>
-            {sentFriendRequests?.map((friendRequest) => (
-              <Box
-                key={friendRequest.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  border: 1,
-                  borderColor: "grey.300",
-                  borderRadius: 1,
-                  p: 2,
-                  mt: 2,
-                }}
-              >
-                <Typography variant="body1">
-                  {friendRequest.receiver.firstName}{" "}
-                  {friendRequest.receiver.lastName}
-                </Typography>
-                <Button
-                  variant="outlined"
-                  onClick={() => cancelFriendRequest(friendRequest)}
-                >
-                  Cancel
-                </Button>
-              </Box>
-            ))}
-          </Box>
-
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h5">Friend Requests</Typography>
-            {receivedFriendRequests?.map((friendRequest) => (
-              <Box
-                key={friendRequest.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  border: 1,
-                  borderColor: "grey.300",
-                  borderRadius: 1,
-                  p: 2,
-                  mt: 2,
-                }}
-              >
-                <Typography variant="body1">
-                  {friendRequest.sender.firstName}{" "}
-                  {friendRequest.sender.lastName}
-                </Typography>
-                <Box sx={{ display: "flex" }}>
-                  <Button
-                    variant="outlined"
-                    onClick={() => acceptFriendRequest(friendRequest)}
-                    sx={{ mr: 1 }}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => declineFriendRequest(friendRequest)}
-                  >
-                    Decline
-                  </Button>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-      </Stack>
+        </div>
+      </Dialog>
+      <Card>
+        <Friends></Friends>
+      </Card>
     </>
   );
 };

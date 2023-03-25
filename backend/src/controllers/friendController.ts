@@ -7,12 +7,15 @@ const seeFriends =
     (client: PrismaClient): RequestHandler =>
         async (req: RequestWithJWTBody, res) => {
             const userId = req.jwtBody?.userId
-            const user = await client.user.findFirst({
+            const user = await client.user.findUnique({
                 where: {
-                    id: userId
+                    id: userId,
                 },
+                include: {
+                    friends: true
+                }
             })
-            const friends = user?.friends;
+            res.json({ friends: user?.friends })
         }
 
 const addFriend =

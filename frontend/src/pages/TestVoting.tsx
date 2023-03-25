@@ -6,6 +6,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useApi } from "../hooks/useApi";
 import { Card as Alias, VotingDeck } from "../models";
+import { primaryColor } from "../styles/FormStyle";
 
 export interface TestVotingProps {
   votingDeck: VotingDeck;
@@ -17,7 +18,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
   const { votingDeck } = props;
   const [index, setIndex] = useState(0);
   const [activeCard, setActiveCard] = useState<Alias>();
-
+    console.log(activeCard?.photoURL)
   const castVote = (vote: boolean) => {
     api
       .post("vote/", {
@@ -45,11 +46,11 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
   }, [index]);
 
   return (
-    <div>
-      <Stack>
+    <Stack sx={{justifyContent: "center", alignItems: "center", width: "100vw", height: "100vh", backgroundColor: primaryColor}}>
+      <Stack sx={{maxHeight: "70%", maxWidth: "20%", height: "100vh", width: "100vw"}}>
       <Card>
-        <CardMedia sx={{ height: "100%" }} image={activeCard?.photoURL ? activeCard.photoURL : ""} title={activeCard?.title} />
-        <CardContent>
+        <CardContent sx={{alignItems: "center"}}>
+            <img width="100vw" height="100%" src={activeCard?.photoURL ? activeCard.photoURL : ""} alt={activeCard?.title || ""} />
           <Typography variant="h4">{activeCard?.title}</Typography>
           <Typography variant="body1" whiteSpace={"pre-line"}>{activeCard?.content}</Typography>
         </CardContent>
@@ -85,6 +86,6 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
         </CardActions>
       </Card>
       </Stack>
-    </div>
+    </Stack>
   );
 };

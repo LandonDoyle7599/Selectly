@@ -1,15 +1,24 @@
 import { Box, Card, Dialog, Typography } from "@material-ui/core";
+import { Image } from "@mui/icons-material";
 import { Button, Modal, TextField } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Stack } from "@mui/system";
 import { useFormik } from "formik";
+import { url } from "inspector";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import backgroundImage from "../../public/Mountain.png";
 import { Friends } from "../components/Friends";
 import { useApi } from "../hooks/useApi";
 import { FriendRequest, User } from "../models";
-import { buttonSx, primaryColor, secondaryColor } from "../styles/FormStyle";
+import "../styles/background.css";
+import {
+  buttonSx,
+  liteBackground,
+  primaryColor,
+  secondaryColor,
+} from "../styles/FormStyle";
 import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Profile: FC = () => {
@@ -120,66 +129,84 @@ export const Profile: FC = () => {
 
   return (
     <>
-      <Typography variant="h2">Profile</Typography>
-      <Button
-        variant="contained"
-        color="secondary"
-        onClick={() => navigate("/dashboard")}
+      <div
+        style={{
+          backgroundImage: "url(../../public/Mountains.png)",
+          height: "100vh",
+          width: "100%",
+        }}
       >
-        Go to Dashboard
-      </Button>
-
-      <>
-        <Typography variant="h5">
-          Update Account Info
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ marginLeft: "10", alignItems: "right" }}
-            onClick={() => setOpenUpdateUser(true)}
-          >
+        <Typography variant="h2">Profile</Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate("/dashboard")}
+        >
+          Go to Dashboard
+        </Button>
+        <>
+          <Typography variant="h5">
             Update Account Info
-          </Button>
-        </Typography>
-      </>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ marginLeft: "10", marginRight: "5" }}
+              onClick={() => setOpenUpdateUser(true)}
+            >
+              Update Account Info
+            </Button>
+          </Typography>
+        </>
 
-      <Dialog open={openUpdateUser}>
-        <div style={{ backgroundColor: secondaryColor }}>
-          <Typography variant="h3">Update Account Info</Typography>
-          <TextField
-            sx={{ margin: "15px" }}
-            {...formikTextFieldProps(formik, "firstName", "First Name")}
-            variant="outlined"
-          />
-          <TextField
-            sx={{ margin: "15px" }}
-            {...formikTextFieldProps(formik, "lastName", "Last Name")}
-            variant="outlined"
-          />
+        <Dialog open={openUpdateUser}>
+          <div style={{ backgroundColor: secondaryColor }}>
+            <Typography variant="h3">Update Account Info</Typography>
+            <TextField
+              sx={{ margin: "15px" }}
+              {...formikTextFieldProps(formik, "firstName", "First Name")}
+              variant="outlined"
+            />
+            <TextField
+              sx={{ margin: "15px" }}
+              {...formikTextFieldProps(formik, "lastName", "Last Name")}
+              variant="outlined"
+            />
 
-          <TextField
-            sx={{ margin: "15px" }}
-            {...formikTextFieldProps(formik, "password", "Password")}
-            type="password"
-            variant="outlined"
-          />
-          <Button
-            sx={{
-              margin: "15px",
-              backgroundColor: "whitesmoke",
-              boxShadow: "10",
-            }}
-            variant="contained"
-            disabled={!formik.dirty}
-            onClick={() => formik.handleSubmit()}
-          >
-            Save
-          </Button>
-        </div>
-      </Dialog>
-      <Card>
+            <TextField
+              sx={{ margin: "15px" }}
+              {...formikTextFieldProps(formik, "password", "Password")}
+              type="password"
+              variant="outlined"
+            />
+            <Button
+              sx={{
+                margin: "15px",
+                backgroundColor: "whitesmoke",
+                boxShadow: "10",
+              }}
+              variant="contained"
+              disabled={!formik.dirty}
+              onClick={() => formik.handleSubmit()}
+            >
+              Save
+            </Button>
+
+            <Button
+              sx={{
+                margin: "15px",
+                backgroundColor: liteBackground,
+                boxShadow: "10",
+              }}
+              variant="contained"
+              onClick={() => setOpenUpdateUser(false)}
+            >
+              Close
+            </Button>
+          </div>
+        </Dialog>
+
         <Friends></Friends>
-      </Card>
+      </div>
     </>
   );
 };

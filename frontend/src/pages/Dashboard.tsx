@@ -14,13 +14,13 @@ import {
 import { Stack } from "@mui/system";
 import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MovieCard } from "../components/MovieCard";
+import { RestaurantCard } from "../components/RestaurantCard";
 import { validateAuth } from "../hooks/checkAuth";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
 import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
-import { MovieCard } from "../components/MovieCard";
-import { RestaurantCard } from "../components/RestaurantCard";
 import { CustomDeck } from "../components/CustomDeck";
 import { AddCustomDeck } from "../components/AddCustomDeck";
 
@@ -42,6 +42,7 @@ export const Dashboard: FC = () => {
   };
 
   useEffect(() => {
+
     const interval = setInterval(() => {
       api.get("decks/waiting/me").then((res) => {
         if (!res.message) {
@@ -58,13 +59,7 @@ export const Dashboard: FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (open && votingDecks !== undefined) {
-    return <TestVoting votingDeck={votingDecks[0]} />;
-  }
-
-  if (open && votingDecks) {
-    return <TestVoting votingDeck={votingDecks[0]} />;
-  }
+  const classes = useStyles();
 
   return (
     <Stack sx={{ width: "100vw", height: "100vh" }} direction="column">

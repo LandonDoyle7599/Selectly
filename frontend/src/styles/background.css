@@ -1,0 +1,5 @@
+.root {
+  background-image: url(${backgroundImage}) !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

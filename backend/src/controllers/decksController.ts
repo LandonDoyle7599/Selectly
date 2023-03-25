@@ -89,13 +89,13 @@ const addCardToDeck = async ({
 
 const makeMovieDeck =
   (client: PrismaClient): RequestHandler =>
-    async (req: RequestWithJWTBody, res) => {
-      const ALLOWED_SERVICES = [203, 157, 26, 387, 372, 371, 444, 389, 307];
+  async (req: RequestWithJWTBody, res) => {
+    const ALLOWED_SERVICES = [203, 157, 26, 387, 372, 371, 444, 389, 307];
     const userId = req.jwtBody?.userId;
 
-      // Create a new Deck
-      const { services, quantity, genres, title, friends } =
-        req.body as MovieDeckCreationBody;
+    // Create a new Deck
+    const { services, quantity, genres, title, friends } =
+      req.body as MovieDeckCreationBody;
 
     const newDeck = await createNewVotingDeck({
       client,
@@ -129,52 +129,14 @@ const makeMovieDeck =
         }
       }
 
-    // send request to api for list of titles
-    let movieIds: number[] = [];
-    await fetch(
-      url +
-        `list-titles/?apiKey=${process.env.WATCHMODE_API_KEY}
-        ${servicesQuery == "" ? "" : "&source_ids=" + servicesQuery}
-        ${genresQuery == "" ? "" : "&genres=" + genresQuery}` +
-        tailParams,
-      {
-        method: "GET",
-      }
-    )
-    .then((response) => response.json())
-    .then((json) => {
-        let movieIndeces: number[] = [];
-        for (let i = 0; i < quantity; i++) {
-            if (i >= json.titles.length) {
-                break;
-            }
-            let index = Math.floor(Math.random() * json.titles.length);
-            while (movieIndeces.includes(index)) {
-                index = Math.floor(Math.random() * json.titles.length);
-            }
-            movieIndeces.push(index);
-        }
-        for (let i = 0; i < movieIndeces.length; i++) {
-            movieIds.push(json.titles[movieIndeces[i]].id);
-        }
-    });
-    if (movieIds.length < 1) {
-      res.status(404).json({ message: "No movies found" });
-      return;
-    }
-
-    // get details for each movie
-    let error = false;
-    for (let i = 0; i < movieIds.length; i++) {
-        if (error) {
-            break;
-        }
-      let jsonMovieData = {} as MovieData;
+      // send request to api for list of titles
+      let movieIds: number[] = [];
       await fetch(
         url +
-        `list-titles/?apiKey=${process.env.WATCHMODE_API_KEY}${servicesQuery == "" ? "" : "&source_ids=" + servicesQuery
-        }${genresQuery == "" ? "" : "&genres=" + genresQuery}` +
-        tailParams,
+          `list-titles/?apiKey=${process.env.WATCHMODE_API_KEY}${
+            servicesQuery == "" ? "" : "&source_ids=" + servicesQuery
+          }${genresQuery == "" ? "" : "&genres=" + genresQuery}` +
+          tailParams,
         {
           method: "GET",
         }
@@ -192,34 +154,52 @@ const makeMovieDeck =
             }
             movieIndeces.push(index);
           }
-          if (movieIndeces.length === 0) {
-            res.status(400).json({ message: "No movies found" });
-            return;
-          }
           for (let i = 0; i < movieIndeces.length; i++) {
             movieIds.push(json.titles[movieIndeces[i]].id);
           }
-        })
-        .catch((err) => {
-
-          error = true;
         });
-      const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
-      let content = "Year: " + year + " Rating: " + us_rating;
-      let link = "https://www.imdb.com/title/" + imdb_id;
-      await addCardToDeck({
-        client,
-        title,
-        content,
-        votingDeckId: newDeck.id,
-        photoURL: poster,
-        link,
-      });
-    }
-    if (error) {
-      res.status(500).json({ message: "Internal Server Error" });
-      return;
-    }
+      if (movieIds.length < 1) {
+        res.status(404).json({ message: "No movies found" });
+        return;
+      }
+
+      // get details for each movie
+      let error = false;
+      for (let i = 0; i < movieIds.length; i++) {
+        if (error) {
+          break;
+        }
+        let jsonMovieData = {} as MovieData;
+        await fetch(
+          url +
+            `title/${movieIds[i]}/details/?apiKey=${process.env.WATCHMODE_API_KEY}`,
+          {
+            method: "GET",
+          }
+        )
+          .then((response) => response.json())
+          .then((json) => {
+            jsonMovieData = json;
+          })
+          .catch((err) => {
+            error = true;
+          });
+        const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
+        let content = "Year: " + year + " Rating: " + us_rating;
+        let link = "https://www.imdb.com/title/" + imdb_id;
+        await addCardToDeck({
+          client,
+          title,
+          content,
+          votingDeckId: newDeck.id,
+          photoURL: poster,
+          link,
+        });
+      }
+      if (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+        return;
+      }
 
       let newMovieDeck = await client.votingDeck.findFirst({
         where: {
@@ -233,33 +213,33 @@ const makeMovieDeck =
 
       // create a deck of cards from the movie information
       res.json(newMovieDeck);
-    };
+    }
   };
 
 const getDeckById =
   (client: PrismaClient): RequestHandler =>
-    async (req: RequestWithJWTBody, res) => {
-      const deckId = parseInt(req.params.id);
-      const userId = req.jwtBody?.userId;
-      const deck = await client.votingDeck.findFirst({
-        where: {
-          id: deckId,
-        },
-        include: {
-          users: true,
-          cards: true,
-        },
-      });
-      if (!deck) {
-        res.status(404).json({ message: "Deck not found" });
-        return;
-      }
-      if (deck.users.find((user) => user.id === userId)) {
-        res.json(deck);
-        return;
-      }
-      res.status(403).json({ message: "Forbidden" });
+  async (req: RequestWithJWTBody, res) => {
+    const deckId = parseInt(req.params.id);
+    const userId = req.jwtBody?.userId;
+    const deck = await client.votingDeck.findFirst({
+      where: {
+        id: deckId,
+      },
+      include: {
+        users: true,
+        cards: true,
+      },
+    });
+    if (!deck) {
+      res.status(404).json({ message: "Deck not found" });
+      return;
     }
+    if (deck.users.find((user) => user.id === userId)) {
+      res.json(deck);
+      return;
+    }
+    res.status(403).json({ message: "Forbidden" });
+  };
 
 const getHistory =
   (client: PrismaClient): RequestHandler =>
@@ -314,16 +294,15 @@ const getOtherIncompleteDecks =
               id: userId,
             },
           },
-          status: "active"
+          status: "active",
         },
-        include: {
-          users: true,
-          cards: true,
-        },
-      });
-      res.json(decks);
-    }
-    
+      include: {
+        users: true,
+        cards: true,
+      },
+    });
+    res.json(decks);
+  };
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },

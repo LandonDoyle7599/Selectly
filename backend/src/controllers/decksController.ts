@@ -200,7 +200,7 @@ const makeMovieDeck =
           error = true;
         });
       const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
-      let content = "Year: " + year + " Rating: " + us_rating;
+      let content = "Year: " + year + "\nRating: " + us_rating;
       let link = "https://www.imdb.com/title/" + imdb_id;
       await addCardToDeck({
         client,

@@ -19,3 +19,13 @@ export type CreateUserBody = {
     email: string
     password: string
 }
+
+export type ServiceID = {
+    id: 203 | 157 | 26 | 387 | 372 | 371 | 444 | 389 | 307
+}
+
+export type MovieDeckCreationBody = {
+    services: ServiceID[]
+    quantity: number
+    genres: number[]
+}

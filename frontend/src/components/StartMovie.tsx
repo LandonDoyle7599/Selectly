@@ -1,3 +1,4 @@
+import { LoadingButton } from "@mui/lab";
 import {
   Button,
   Card,
@@ -151,7 +152,8 @@ export const StartMovie: FC = () => {
               </MenuItem>
             ))}
           </Select>
-          <Button
+          <LoadingButton
+            loading={formik.isSubmitting}
             variant="contained"
             onClick={formik.submitForm}
             sx={{
@@ -162,7 +164,7 @@ export const StartMovie: FC = () => {
             }}
           >
             Submit
-          </Button>
+          </LoadingButton>
         </Stack>
       </Card>
     </Stack>

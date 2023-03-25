@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
-import { RequestWithJWTBody, FriendRequestBody, FriendRequestReponseBody, UnfriendBody } from '../dto/types'
+import { RequestWithJWTBody } from '../dto/types'
+import {FriendRequestBody, FriendRequestReponseBody, UnfriendBody } from '../dto/friendTypes'
 import { controller } from '../lib/controller'
 
 const seeFriends =

@@ -234,6 +234,7 @@ const makeMovieDeck =
       // create a deck of cards from the movie information
       res.json(newMovieDeck);
     };
+  };
 
 const getDeckById =
   (client: PrismaClient): RequestHandler =>
@@ -280,6 +281,7 @@ const getIncompleteDecks =
       });
       res.json(decks);
     }
+    
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },

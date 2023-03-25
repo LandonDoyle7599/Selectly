@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
-import { RequestWithJWTBody, LoginBody, CreateUserBody, UpdateUserBody } from '../dto/types'
+import { RequestWithJWTBody } from '../dto/types'
+import { CreateUserBody, LoginBody, UpdateUserBody } from '../dto/userTypes'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { controller } from '../lib/controller'

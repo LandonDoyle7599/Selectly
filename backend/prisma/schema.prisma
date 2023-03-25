@@ -11,24 +11,25 @@ datasource db {
 }
 
 model VotingDeck {
-    id        Int      @id @default(autoincrement())
-    users     User[]
-    cards     Card[]
-    status    String
-    votes     Vote[]
-    title     String
-    type      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id            Int      @id @default(autoincrement())
+    users         User[]   @relation("IncompleteVotes")
+    finishedUsers User[]   @relation("FinishedVotes")
+    cards         Card[]
+    status        String
+    votes         Vote[]
+    title         String
+    type          String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 }
 
 model CustomDeck {
-    id  Int @id @default(autoincrement())
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id     Int    @id @default(autoincrement())
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
-    cards Card[]
-    title String
-    type  String
+    cards  Card[]
+    title  String
+    type   String
 }
 
 model User {
@@ -41,7 +42,8 @@ model User {
     friendsOf              User[]          @relation("Friends")
     createdAt              DateTime        @default(now())
     updatedAt              DateTime        @updatedAt
-    votingDeck             VotingDeck[]
+    incompleteVotingDeck   VotingDeck[]    @relation("IncompleteVotes")
+    completedVotingDeck    VotingDeck[]    @relation("FinishedVotes")
     customDeck             CustomDeck[]
     votes                  Vote[]
     friendRequests         FriendRequest[] @relation("Sender")
@@ -49,18 +51,18 @@ model User {
 }
 
 model Card {
-    id         Int        @id @default(autoincrement())
-    title      String
-    content    String
-    photoURL   String?
-    link       String?
+    id           Int         @id @default(autoincrement())
+    title        String
+    content      String
+    photoURL     String?
+    link         String?
     votingDeckId Int?
     customDeckId Int?
-    votingDeck VotingDeck? @relation(fields: [votingDeckId], references: [id])
-    customDeck CustomDeck? @relation(fields: [customDeckId], references: [id])
-    createdAt  DateTime   @default(now())
-    updatedAt  DateTime   @updatedAt
-    votes      Vote[]
+    votingDeck   VotingDeck? @relation(fields: [votingDeckId], references: [id])
+    customDeck   CustomDeck? @relation(fields: [customDeckId], references: [id])
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+    votes        Vote[]
 }
 
 model Vote {
@@ -71,17 +73,18 @@ model Vote {
     deckId    Int
     userId    Int
     cardId    Int
+    vote      Boolean
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
 }
 
 model FriendRequest {
-    id        Int      @id @default(autoincrement())
-    status    String    
-    sender    User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
-    receiver  User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-    senderId  Int
+    id         Int      @id @default(autoincrement())
+    status     String
+    sender     User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+    receiver   User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    senderId   Int
     receiverId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }

@@ -1,8 +1,86 @@
 import { Card, PrismaClient } from "@prisma/client";
 import { RequestHandler } from "express";
+import { AddCardsToDeckProps, CreateVotingDeckProps } from "../dto/deckTypes";
 import { MovieData, MovieDeckCreationBody } from "../dto/movieDeckTypes";
 import { RequestWithJWTBody } from "../dto/types";
 import { controller } from "../lib/controller";
+
+const createNewVotingDeck = async ({
+  client,
+  userId,
+  type,
+  title,
+  friends,
+}: CreateVotingDeckProps) => {
+  const newDeck = await client.votingDeck.create({
+    data: {
+      status: "in progress",
+      title,
+      type,
+      users: { connect: { id: userId } },
+    },
+  });
+  for (let i = 0; i < friends.length; i++) {
+    await client.votingDeck.update({
+      where: {
+        id: newDeck.id,
+      },
+      data: {
+        users: {
+          connect: {
+            id: friends[i],
+          },
+        },
+      },
+    });
+  }
+  return newDeck;
+};
+
+const addCardToDeck = async ({
+  client,
+  title,
+  content,
+  votingDeckId,
+  customDeckId,
+  photoURL,
+  link,
+}: AddCardsToDeckProps) => {
+  const card = await client.card.create({
+    data: {
+      title,
+      photoURL,
+      link,
+      content,
+    },
+  });
+  let deckId: number;
+  let func: any;
+  if (votingDeckId) {
+    deckId = votingDeckId;
+    func = client.votingDeck.update;
+  } else if (customDeckId) {
+    deckId = customDeckId;
+    func = client.customDeck.update;
+  } else {
+    return null;
+  }
+  let dbParams = {
+    where: {
+      id: deckId,
+    },
+    data: {
+      cards: {
+        connect: {
+          id: card.id,
+        },
+      },
+    },
+  };
+
+  await func(dbParams);
+  return card;
+};
 
 const makeMovieDeck =
   (client: PrismaClient): RequestHandler =>
@@ -10,32 +88,25 @@ const makeMovieDeck =
     const ALLOWED_SERVICES = [203, 157, 26, 387, 372, 371, 444, 389, 307];
 
     const userId = req.jwtBody?.userId;
+    let type = "movie";
 
     // Create a new Deck
     const { services, quantity, genres, title, friends } =
       req.body as MovieDeckCreationBody;
-    const movieDeck = await client.votingDeck.create({
-      data: {
-        status: "in progress",
-        title,
-        type: "movie",
-        users: { connect: { id: userId } },
-      },
-    });
-    for (let i = 0; i < friends.length; i++) {
-      await client.votingDeck.update({
-        where: {
-          id: movieDeck.id,
-        },
-        data: {
-          users: {
-            connect: {
-              id: friends[i],
-            },
-          },
-        },
-      });
+
+    if (friends.length < 1) {
+      res.status(404).json({ message: "Not enough friends" });
     }
+
+    const newDeck = await createNewVotingDeck({
+      client,
+      userId,
+      type: "movie",
+      title,
+      friends,
+    }).catch((err) => {
+      res.status(500).json({ message: "Internal Server Error" });
+    });
 
     // build url to request to api for list of titles
     const url = "https://api.watchmode.com/v1/";
@@ -90,12 +161,14 @@ const makeMovieDeck =
         for (let i = 0; i < movieIndeces.length; i++) {
           movieIds.push(json.titles[movieIndeces[i]].id);
         }
+      })
+      .catch((err) => {
+        res.status(500).json({ message: "Internal Server Error" });
       });
 
     // get details for each movie
-    const movieCards: Card[] = [];
     for (let i = 0; i < movieIds.length; i++) {
-        let jsonMovieData = {} as MovieData;
+      let jsonMovieData = {} as MovieData;
       await fetch(
         url +
           `title/${movieIds[i]}/details/?apiKey=${process.env.WATCHMODE_API_KEY}`,
@@ -105,47 +178,38 @@ const makeMovieDeck =
       )
         .then((response) => response.json())
         .then((json) => {
-            jsonMovieData = json;
+          jsonMovieData = json;
+        })
+        .catch((err) => {
+          res.status(500).json({ message: "Internal Server Error" });
         });
-        const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
-        const movie = await client.card.create({
-            data: {
-                title,
-                photoURL: poster,
-                link: "https://www.imdb.com/title/" + imdb_id,
-                content: "Year: " + year + " Rating: " + us_rating,
-            },
-        });
-        movieCards.push(movie);
+      const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
+      let content = "Year: " + year + " Rating: " + us_rating;
+      let link = "https://www.imdb.com/title/" + imdb_id;
+      await addCardToDeck({
+        client,
+        title,
+        content,
+        votingDeckId: newDeck.id,
+        photoURL: poster,
+        link,
+      }).catch((err) => {
+        res.status(500).json({ message: "Internal Server Error" });
+      });
     }
 
-    for (let i = 0; i < movieCards.length; i++) {
-        await client.votingDeck.update({
-          where: {
-            id: movieDeck.id,
-          },
-          data: {
-            cards: {
-              connect: {
-                id: movieCards[i].id,
-              },
-            },
-          },
-        });
-      }
-
     let newMovieDeck = await client.votingDeck.findFirst({
-        where: {
-            id: movieDeck.id,
-        },
-        include: {
-            users: true,
-            cards: true,
-        },
+      where: {
+        id: newDeck.id,
+      },
+      include: {
+        users: true,
+        cards: true,
+      },
     });
 
-      // create a deck of cards from the movie information
-    res.json({ newMovieDeck });
+    // create a deck of cards from the movie information
+    res.json(newMovieDeck);
   };
 
 export const decksController = controller("decks", [

@@ -9,7 +9,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import React from "react";
 import { Link } from "react-router-dom";
-import { VoteType } from "../pages/Demo";
+import { VoteType } from "../pages/VotingPage";
 
 export type CardProps = {
   title: string;
@@ -18,8 +18,6 @@ export type CardProps = {
   id: number;
   handleVote: (vote: VoteType) => void;
 };
-
-// TODO: Votebox
 
 export const ItemCard = (props: CardProps) => {
   const { title, description, imageURL, id, handleVote } = props;
@@ -39,20 +37,31 @@ export const ItemCard = (props: CardProps) => {
       <Card>
         <CardActions>
           <Button
+            sx={{
+              ":hover": {
+                bgcolor: "#BDE89B",
+                color: "6FC030",
+              },
+            }}
             size="small"
             color="primary"
             onClick={() => handleVote("like")}
           >
-            <ThumbUpIcon />
+            <ThumbUpIcon htmlColor="#6FC030" />
           </Button>
           <Button
+            sx={{
+              ":hover": {
+                bgcolor: "#E8AD9B",
+                color: "primary",
+              },
+            }}
             size="small"
             color="error"
             onClick={() => handleVote("dislike")}
           >
             <ThumbDownIcon />
           </Button>
-          {/* error for red */}
         </CardActions>
       </Card>
     </Stack>

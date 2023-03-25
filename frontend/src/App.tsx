@@ -28,10 +28,10 @@ const router = createBrowserRouter([
                 path: 'create-account',
                 element: <CreateAccount />,
             },
-            {
-              path: 'demo',
-              element: <Demo />,
-            },
+      {
+        path: "vote",
+        element: <Demo />,
+      },
             {
                 path: 'dashboard',
                 element: <Dashboard />

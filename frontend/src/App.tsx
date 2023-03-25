@@ -10,6 +10,7 @@ import { Api } from "./lib/api";
 import CreateAccount from "./pages/CreateAccount";
 import { CreateDeck } from "./pages/CreateDeck";
 import { Dashboard } from "./pages/Dashboard";
+import { Demo } from "./pages/Demo";
 import { History } from "./pages/History";
 import Home from "./pages/Home";
 import { Login } from "./pages/Login";
@@ -55,7 +56,11 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <Home />,
-      }
+      },
+      {
+        path: "/demo",
+        element: <Demo />,
+      },
     ],
   },
 ]);

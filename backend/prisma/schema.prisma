@@ -23,11 +23,11 @@ model VotingDeck {
 }
 
 model CustomDeck {
-    id  Int @id @default(autoincrement())
-    user User @relation(fields: [id], references: [id])
+    id    Int    @id @default(autoincrement())
+    user  User   @relation(fields: [id], references: [id])
     cards Card[]
     title String
-    type String
+    type  String
 }
 
 model User {
@@ -48,16 +48,18 @@ model User {
 }
 
 model Card {
-    id        Int        @id @default(autoincrement())
-    title     String
-    content   String
-    photoURL  String?
-    link      String?
-    votingDeck      VotingDeck @relation(fields: [id], references: [id])
-    customDeck      CustomDeck @relation(fields: [id], references: [id])
-    createdAt DateTime   @default(now())
-    updatedAt DateTime   @updatedAt
-    votes     Vote[]
+    id         Int        @id @default(autoincrement())
+    title      String
+    content    String
+    photoURL   String?
+    link       String?
+    votingDeckId Int?
+    customDeckId Int?
+    votingDeck VotingDeck? @relation(fields: [votingDeckId], references: [id])
+    customDeck CustomDeck? @relation(fields: [customDeckId], references: [id])
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    votes      Vote[]
 }
 
 model Vote {
@@ -65,6 +67,7 @@ model Vote {
     deck      VotingDeck @relation(fields: [id], references: [id])
     user      User       @relation(fields: [id], references: [id])
     card      Card       @relation(fields: [id], references: [id])
+    vote      Boolean
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
 }

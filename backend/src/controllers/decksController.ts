@@ -89,14 +89,13 @@ const addCardToDeck = async ({
 
 const makeMovieDeck =
   (client: PrismaClient): RequestHandler =>
-  async (req: RequestWithJWTBody, res) => {
-    const ALLOWED_SERVICES = [203, 157, 26, 387, 372, 371, 444, 389, 307];
-
+    async (req: RequestWithJWTBody, res) => {
+      const ALLOWED_SERVICES = [203, 157, 26, 387, 372, 371, 444, 389, 307];
     const userId = req.jwtBody?.userId;
 
-    // Create a new Deck
-    const { services, quantity, genres, title, friends } =
-      req.body as MovieDeckCreationBody;
+      // Create a new Deck
+      const { services, quantity, genres, title, friends } =
+        req.body as MovieDeckCreationBody;
 
     const newDeck = await createNewVotingDeck({
       client,
@@ -129,7 +128,6 @@ const makeMovieDeck =
           genresQuery += genres[i] + ",";
         }
       }
-    }
 
     // send request to api for list of titles
     let movieIds: number[] = [];
@@ -174,16 +172,36 @@ const makeMovieDeck =
       let jsonMovieData = {} as MovieData;
       await fetch(
         url +
-          `title/${movieIds[i]}/details/?apiKey=${process.env.WATCHMODE_API_KEY}`,
+        `list-titles/?apiKey=${process.env.WATCHMODE_API_KEY}${servicesQuery == "" ? "" : "&source_ids=" + servicesQuery
+        }${genresQuery == "" ? "" : "&genres=" + genresQuery}` +
+        tailParams,
         {
           method: "GET",
         }
       )
         .then((response) => response.json())
         .then((json) => {
-          jsonMovieData = json;
+          let movieIndeces: number[] = [];
+          for (let i = 0; i < quantity; i++) {
+            if (i >= json.titles.length) {
+              break;
+            }
+            let index = Math.floor(Math.random() * json.titles.length);
+            while (movieIndeces.includes(index)) {
+              index = Math.floor(Math.random() * json.titles.length);
+            }
+            movieIndeces.push(index);
+          }
+          if (movieIndeces.length === 0) {
+            res.status(400).json({ message: "No movies found" });
+            return;
+          }
+          for (let i = 0; i < movieIndeces.length; i++) {
+            movieIds.push(json.titles[movieIndeces[i]].id);
+          }
         })
         .catch((err) => {
+
           error = true;
         });
       const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
@@ -203,20 +221,70 @@ const makeMovieDeck =
       return;
     }
 
-    let newMovieDeck = await client.votingDeck.findFirst({
-      where: {
-        id: newDeck.id,
-      },
-      include: {
-        users: true,
-        cards: true,
-      },
-    });
+      let newMovieDeck = await client.votingDeck.findFirst({
+        where: {
+          id: newDeck.id,
+        },
+        include: {
+          users: true,
+          cards: true,
+        },
+      });
 
-    // create a deck of cards from the movie information
-    res.json(newMovieDeck);
+      // create a deck of cards from the movie information
+      res.json(newMovieDeck);
+    };
   };
+
+const getDeckById =
+  (client: PrismaClient): RequestHandler =>
+    async (req: RequestWithJWTBody, res) => {
+      const deckId = parseInt(req.params.id);
+      const userId = req.jwtBody?.userId;
+      const deck = await client.votingDeck.findFirst({
+        where: {
+          id: deckId,
+        },
+        include: {
+          users: true,
+          cards: true,
+        },
+      });
+      if (!deck) {
+        res.status(404).json({ message: "Deck not found" });
+        return;
+      }
+      if (deck.users.find((user) => user.id === userId)) {
+        res.json(deck);
+        return;
+      }
+      res.status(403).json({ message: "Forbidden" });
+    }
+
+const getIncompleteDecks =
+  (client: PrismaClient): RequestHandler =>
+    async (req: RequestWithJWTBody, res) => {
+      const userId = req.jwtBody?.userId;
+      const decks = await client.votingDeck.findMany({
+        where: {
+          users: {
+            some: {
+              id: userId,
+            },
+          },
+          status: "active"
+        },
+        include: {
+          users: true,
+          cards: true,
+        },
+      });
+      res.json(decks);
+    }
+    
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },
+  { path: "/:id", endpointBuilder: getDeckById, method: "get" },
+  { path: "/waiting", endpointBuilder: getIncompleteDecks, method: "get" },
 ]);

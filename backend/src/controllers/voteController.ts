@@ -4,7 +4,7 @@ import { RequestWithJWTBody } from "../dto/types";
 import { VoteBody } from "../dto/voteTypes";
 import { controller } from "../lib/controller";
 
-const makeMovieDeck =
+const vote =
   (client: PrismaClient): RequestHandler =>
     async (req: RequestWithJWTBody, res) => {
       const { cardId, deckId, vote } = req.body as VoteBody;
@@ -84,5 +84,5 @@ const makeMovieDeck =
 
 
 export const decksController = controller("vote", [
-  { path: "/", endpointBuilder: makeMovieDeck, method: "post" },
+  { path: "/", endpointBuilder: vote, method: "post" },
 ]);

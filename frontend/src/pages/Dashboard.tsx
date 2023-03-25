@@ -21,8 +21,6 @@ import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
 import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
-import { MovieCard } from "../components/MovieCard";
-import { RestaurantCard } from "../components/RestaurantCard";
 import { CustomDeck } from "../components/CustomDeck";
 import { AddCustomDeck } from "../components/AddCustomDeck";
 

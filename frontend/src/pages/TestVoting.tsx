@@ -6,6 +6,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useApi } from "../hooks/useApi";
 import { Card as Alias, VotingDeck } from "../models";
+import { primaryColor } from "../styles/FormStyle";
 
 export interface TestVotingProps {
   votingDeck: VotingDeck;
@@ -45,7 +46,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
   }, [index]);
 
   return (
-    <Stack sx={{justifyContent: "center", alignItems: "center", width: "100vw", height: "100vh", backgroundColor: "purple"}}>
+    <Stack sx={{justifyContent: "center", alignItems: "center", width: "100vw", height: "100vh", backgroundColor: primaryColor}}>
       <Stack sx={{maxHeight: "70%", maxWidth: "20%", height: "100vh", width: "100vw"}}>
       <Card>
         <CardContent sx={{alignItems: "center"}}>

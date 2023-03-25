@@ -82,8 +82,8 @@ export const StartMovie: FC = () => {
   }
 
   return (
-    <Stack direction={"column"}>
-      <Card sx={{ width: "50%" }}>
+    <Stack direction={"column"} sx={{backgroundColor: secondaryColor}}>
+      <Card sx={{ width: "50%", margin: "8px", padding: "8px" }}>
         <Stack direction={"column"}>
           <h1>Select Your Movies </h1>
           <Typography mt={3} variant="h5">

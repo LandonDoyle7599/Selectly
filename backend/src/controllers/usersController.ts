@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
-import { RequestWithJWTBody, LoginBody, CreateUserBody } from '../dto/types'
+import { RequestWithJWTBody, LoginBody, CreateUserBody, UpdateUserBody } from '../dto/types'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { controller } from '../lib/controller'
@@ -46,6 +46,13 @@ const createUser =
             res.json({ user, token })
         }
     }
+
+const updateUser =
+    (client: PrismaClient): RequestHandler =>
+        async (req, res) => {
+            const { firstName, lastName, email, password } = req.body as UpdateUserBody
+            // const userId = req.jwtBody?.userId
+        }
 
 const login =
     (client: PrismaClient): RequestHandler =>

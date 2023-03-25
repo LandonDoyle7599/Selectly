@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv'
 import cors from "cors";
 import { usersController } from './controllers/usersController';
+import { friendController } from './controllers/friendController';
 
 dotenv.config()
 const client = new PrismaClient()
@@ -12,6 +13,7 @@ app.use(express.json())
 app.use(cors())
 
 usersController(app, client)
+friendController(app, client)
 
 app.get('/', (req, res) => {
     res.send(`<h1>Hello, world!</h1>`)

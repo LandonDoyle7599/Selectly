@@ -1,7 +1,7 @@
 export type CreateVotingDeckProps = {
   client: PrismaClient;
   userId?: number;
-  type: "custom" | "movie";
+  type: "custom" | "movie" | "restaurant";
   title: string;
   friends: number[];
 };
@@ -25,4 +25,9 @@ export type CustomDeckProps = {
   cards: CardProps[];
   title: string;
   type: string;
+}
+
+export type CustomStartBody = {
+    id: number
+    friends: number[]
 }

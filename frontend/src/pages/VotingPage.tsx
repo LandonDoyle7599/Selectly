@@ -2,7 +2,7 @@ import { ItemCard } from "../components/ItemCard";
 
 export type VoteType = "like" | "dislike";
 
-export const Demo = () => {
+export const Vote = () => {
   const title = "Title";
   const description = "Description";
   const imageURL = "https://picsum.photos/200/300";

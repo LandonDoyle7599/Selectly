@@ -4,17 +4,17 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
-import CreateAccount from "./pages/CreateAccount";
 import { ApiContext } from "./contexts/api";
 import { Api } from "./lib/api";
-import { Login } from "./pages/Login";
-import Home from "./pages/Home";
+import CreateAccount from "./pages/CreateAccount";
 import { CreateDeck } from "./pages/CreateDeck";
+import { Dashboard } from "./pages/Dashboard";
+import { History } from "./pages/History";
+import Home from "./pages/Home";
+import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
 import { StartVote } from "./pages/StartVote";
-import { History } from "./pages/History";
-import { Dashboard } from "./pages/Dashboard";
-import { Demo } from "./pages/Demo";
+import { Vote } from "./pages/VotingPage";
 
 const router = createBrowserRouter([
   {
@@ -29,8 +29,8 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       {
-        path: "demo",
-        element: <Demo />,
+        path: "vote",
+        element: <Vote />,
       },
       {
         path: "dashboard",
@@ -39,10 +39,6 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
-      },
-      {
-        path: "vote",
-        element: <Demo />,
       },
       {
         path: "history",

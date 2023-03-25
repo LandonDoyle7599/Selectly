@@ -21,6 +21,7 @@ import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
 import { MovieCard } from "../components/MovieCard";
 import { RestaurantCard } from "../components/RestaurantCard";
+import { CustomDeck } from "../components/CustomDeck";
 
 
 export const Dashboard: FC = () => {
@@ -28,6 +29,8 @@ export const Dashboard: FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const [votingDecks, setVotingDecks] = useState<VotingDeck[]>();
+  const [customDecks, setCustomDecks] = useState<VotingDeck[]>();
+  const [selectedDeck, setSelectedDeck] = useState<VotingDeck | undefined>();
 
   const api = useApi();
   const navigate = useNavigate();
@@ -43,7 +46,12 @@ export const Dashboard: FC = () => {
     api.get("decks/waiting/me").then((res) => {
       if (!res.message) {
         setVotingDecks(res);
-        console.log(res);
+      }
+    });
+
+    api.get("decks/custom/all").then((res) => {
+      if (!res.message) {
+        setCustomDecks(res);
       }
     });
   }, []);
@@ -81,6 +89,13 @@ export const Dashboard: FC = () => {
         <Grid item xs={12} sm={6} md={4} spacing={1}>
             <MovieCard/>
             <RestaurantCard/>
+            {
+              customDecks?.map((deck) => {
+                  return (
+                      <CustomDeck title={deck.title} id={deck.id}/>
+                  );
+              })
+            }
       </Grid>
       <h1>Pending Votes</h1>
       {votingDecks !== undefined && (

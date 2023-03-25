@@ -78,12 +78,11 @@ export const CreateDeck: FC = () => {
       >
         <CardContent sx={{ textAlign: "center" }}>
           <Typography variant="h5" component="h1" gutterBottom>
-            Current Cards Added {deckName} {deckType}
+            Current Cards Added
           </Typography>
           {cards.map((card) => (
             <MCard
               sx={{
-                width: "80%",
                 borderRadius: "12px",
               }}
             >

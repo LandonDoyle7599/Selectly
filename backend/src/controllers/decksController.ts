@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Card, PrismaClient } from "@prisma/client";
 import { RequestHandler } from "express";
 import { AddCardsToDeckProps, CreateVotingDeckProps, CustomDeckProps } from "../dto/deckTypes";
 import { MovieData, MovieDeckCreationBody } from "../dto/movieDeckTypes";
@@ -304,13 +304,29 @@ const getOtherIncompleteDecks =
     res.json(decks);
   };
 
-const makeCustomDeck =
-  (client: PrismaClient): RequestHandler =>
-  async (req: RequestWithJWTBody, res) => {
-    const { cards, title, type } = req.body as CustomDeckProps;
-    const userId = req.jwtBody?.userId;
+// const makeCustomDeck =
+//   (client: PrismaClient): RequestHandler =>
+//   async (req: RequestWithJWTBody, res) => {
+//     const { cards, title, type } = req.body as CustomDeckProps;
+//     const userId = req.jwtBody?.userId;
+//     const newCards: Card[] = [];
+//     for (let i = 0; i < cards.length; i++) {
+//       const card = await client.card.create({
+//         data: {
+//           title: cards[i].title,
+//           content: cards[i].content,
+//         }
+//       })
+//       newCards.push(card);
+//     }
+//     const newDeck = await client.votingDeck.create({
+//       data: {
+//         title,
+//         type,
+
+//     })
     
-  }
+//   }
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },

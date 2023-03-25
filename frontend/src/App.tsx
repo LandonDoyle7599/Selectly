@@ -7,8 +7,8 @@ import {
 import { ApiContext } from "./contexts/api";
 import { Api } from "./lib/api";
 import CreateAccount from "./pages/CreateAccount";
-import { Demo } from "./pages/Demo";
 import { Login } from "./pages/Login";
+import { Demo } from "./pages/VotingPage";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +23,7 @@ const router = createBrowserRouter([
         element: <CreateAccount />,
       },
       {
-        path: "demo",
+        path: "vote",
         element: <Demo />,
       },
     ],

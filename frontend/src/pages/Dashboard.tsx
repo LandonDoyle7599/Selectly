@@ -22,6 +22,7 @@ import { TestVoting } from "./TestVoting";
 import { MovieCard } from "../components/MovieCard";
 import { RestaurantCard } from "../components/RestaurantCard";
 import { CustomDeck } from "../components/CustomDeck";
+import { AddCustomDeck } from "../components/AddCustomDeck";
 
 
 export const Dashboard: FC = () => {
@@ -81,9 +82,6 @@ export const Dashboard: FC = () => {
         <Button className="dash-button" onClick={() => navigate("/history")}>
           History
         </Button>
-        <Button className="button-dash" onClick={() => navigate("/createDeck")}>
-          Deck creation
-        </Button>
       </Card>
       <h1>Decks</h1>
         <Grid item xs={12} sm={6} md={4} spacing={1}>
@@ -96,6 +94,7 @@ export const Dashboard: FC = () => {
                   );
               })
             }
+            <AddCustomDeck/>
       </Grid>
       <h1>Pending Votes</h1>
       {votingDecks !== undefined && (

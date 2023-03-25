@@ -20,6 +20,13 @@ export type CreateUserBody = {
     password: string
 }
 
+export type UpdateUserBody = {
+    firstName?: string
+    lastName?: string
+    email?: string
+    password?: string
+}
+
 export type FriendRequestBody = {
     friendEmail: string
 }
@@ -27,4 +34,12 @@ export type FriendRequestBody = {
 export type FriendRequestReponseBody = {
     friendRequestId: number
     response: 'accepted' | 'declined'
+}
+
+export type UnfriendBody = {
+    friendId: number
+}
+
+export type CancelRequestBody = {
+    friendRequestId: number
 }

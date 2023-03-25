@@ -78,14 +78,11 @@ export const CreateDeck: FC = () => {
       >
         <CardContent sx={{ textAlign: "center" }}>
           <Typography variant="h5" component="h1" gutterBottom>
-            Current Cards Added {deckName} {deckType}
+            Current Cards Added
           </Typography>
           {cards.map((card) => (
             <MCard
               sx={{
-                my: 2,
-                p: 2,
-                width: "80%",
                 borderRadius: "12px",
               }}
             >
@@ -117,6 +114,7 @@ export const CreateDeck: FC = () => {
           justifyContent: "center",
           alignItems: "center",
         }}
+        marginTop={4}
         spacing={2}
       >
         <TextField
@@ -139,12 +137,12 @@ export const CreateDeck: FC = () => {
       <Stack
         direction="column"
         sx={{
-          width: "100vw",
+          width: "100%",
           justifyContent: "center",
           alignItems: "center",
         }}
         spacing={2}
-        p={2}
+        marginTop={4}
       >
         <Typography variant="h4" component="h1" gutterBottom>
           {" "}

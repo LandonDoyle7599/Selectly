@@ -46,7 +46,7 @@ export const Login: FC = () => {
         .then((res) => {
           if (res.token) {
             window.localStorage.setItem("token", res.token);
-            navigateToHome();
+            navigateToDashboard();
           } else {
             setError(res.message);
           }
@@ -62,7 +62,7 @@ export const Login: FC = () => {
         <Stack gap="2rem" justifyContent="center">
       <Stack direction="row">
         <IconButton>
-          <ArrowBackIcon onClick={navigateToDashboard} />
+          <ArrowBackIcon onClick={navigateToHome} />
         </IconButton>
         <Typography variant="h4" align="center" width="100%" sx={{ mr: 5 }}>
           Create Account

@@ -1,7 +1,7 @@
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import { Button, IconButton, Popover, Popper, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -14,6 +14,9 @@ export const Dashboard: FC = () => {
         localStorage.removeItem("token");
         navigate("/home");
     }
+
+    useEffect(() => {
+        
 
     return(
         <Stack sx={{width:"100vw", height:"100vh"}} direction="column">
@@ -42,7 +45,6 @@ export const Dashboard: FC = () => {
         </Stack>
       </Popover>
             </Stack>
-            <h1>Login</h1>
             <Button onClick={() => navigate("/profile")}>Go to Profile</Button>
             <Button onClick={() => navigate("/history")}>Go to History</Button>
             <Button onClick={() => navigate("/createDeck")}>Go to deck creation</Button>

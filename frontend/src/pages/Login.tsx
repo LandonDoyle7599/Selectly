@@ -15,8 +15,12 @@ export const Login: FC = () => {
   const api = useApi();
 
   const navigateToHome = () => {
-    navigate("/dashboard");
+    navigate("/home");
   };
+
+  const navigateToDashboard = () => {
+    navigate("/dashboard")
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -49,7 +53,7 @@ export const Login: FC = () => {
         <Stack gap="2rem" justifyContent="center">
       <Stack direction="row">
         <IconButton>
-          <ArrowBackIcon onClick={navigateToHome} />
+          <ArrowBackIcon onClick={navigateToDashboard} />
         </IconButton>
         <Typography variant="h4" align="center" width="100%" sx={{ mr: 5 }}>
           Sign In

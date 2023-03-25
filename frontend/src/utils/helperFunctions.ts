@@ -68,6 +68,3 @@ export function getTopSelection(deck: VotingDeck) : {} {
     }
 }
 
-export function getAllResults(deck: VotingDeck) : {} {
-    
-}

@@ -29,6 +29,23 @@ const requestFriend =
                     email: friendEmail
                 }
             })
+
+            const user = await client.user.findUnique({
+                where: {
+                    id: userId
+                }, 
+                include: {
+                    friends: true
+                }
+            })
+
+            // Check if the user is already friends with the person they are trying to add
+            const alreadyFriends = user?.friends?.some(currFriend => currFriend.id === friend?.id)
+            if (alreadyFriends) {
+                res.status(404).json({ message: "You are already friends with this user." })
+                return
+            }
+
             const reverseRequest = await client.friendRequest.findFirst({
                 where: {
                     senderId: friend?.id,
@@ -36,14 +53,12 @@ const requestFriend =
                     status: "pending"
                 }
             })
-            // If the other person has already sent the current user a request, accept it
+            // If the other person has already sent the current user a request, accept it and delete it from the database
             if (reverseRequest) {
                 makeFriends(userId, friend?.id, client)
-                await client.friendRequest.findFirst({
+                await client.friendRequest.delete({
                     where: {
-                        senderId: friend?.id,
-                        receiverId: userId,
-                        status: "accepted"
+                        id: reverseRequest.id
                     }
                 })
                 res.json({})
@@ -53,7 +68,7 @@ const requestFriend =
                     where: { 
                         senderId: userId,
                         receiverId: friend?.id,
-                        status: "pending" || "accepted"
+                        status: "pending"
                     }
                 })
     
@@ -142,15 +157,13 @@ const respondToRequest =
                 }
             })
             if (friendRequest) {
-                const newFriendRequest = await client.friendRequest.update({
+                const newFriendRequest = await client.friendRequest.delete({
                     where: {
                         id: friendRequestId,
                     },
-                    data: {
-                        status: response
-                    }
                 })
                 if (response === "accepted" && friendRequest) {
+                    newFriendRequest.status = "accepted";
                     const friendId = friendRequest.senderId;
                     makeFriends(userId, friendId, client)              
                 }
@@ -243,6 +256,7 @@ async function makeFriends(userId: number | undefined, friendId: number | undefi
             },
         }
     })
+
 
 }
 

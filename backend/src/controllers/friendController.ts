@@ -266,6 +266,6 @@ export const friendController = controller('friends', [
     { path: '/outgoing', endpointBuilder: outgoingRequests, method: 'get' },
     { path: '/incoming', endpointBuilder: incomingRequests, method: 'get' },
     { path: '/response', endpointBuilder: respondToRequest, method: 'post' },
-    { path: '/cancel', endpointBuilder: cancelRequest, method: 'delete' },
+    { path: '/cancel', endpointBuilder: cancelRequest, method: 'post' },
     { path: '/unfriend', endpointBuilder: unfriend, method: 'post' },
 ])

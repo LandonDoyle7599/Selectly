@@ -8,7 +8,9 @@ import { Services, Genres } from "../enums";
 import { formikTextFieldNumberProps, formikTextFieldProps, removeLeadingUnderscoresAndConvertToIntArray } from "../utils/helperFunctions";
 import { User, VotingDeck } from "../models";
 import { TestVoting } from "../pages/TestVoting";
-export const StartMovie: FC = () => {
+
+
+export const StartRestaurant: FC = () => {
   const navigate = useNavigate();
   const api = useApi();
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export const StartMovie: FC = () => {
       api
         .post("decks/restaurants", {
           title: values.title,
-        zip: values.zip,
+        zipcode: values.zip,
           quantity: values.quantity,
           friends: values.friends,
         })
@@ -78,7 +80,7 @@ export const StartMovie: FC = () => {
         label="Quantity"
         variant="outlined"
         />
-      <TextField {...formikTextFieldProps(formik, "zip", "Zip Code")} label="Outlined" variant="outlined"/>
+      <TextField {...formikTextFieldNumberProps(formik, "zip", "Zip Code")} label="Zip Code" variant="outlined"/>
         <Select
         value={formik.values.friends}
         multiple

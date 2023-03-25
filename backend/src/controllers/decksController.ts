@@ -334,5 +334,5 @@ export const decksController = controller("decks", [
   { path: "/history", endpointBuilder: getHistory, method: "get" },
   { path: "/waiting/me", endpointBuilder: getMyIncompleteDecks, method: "get" },
   { path: "/waiting/others", endpointBuilder: getOtherIncompleteDecks, method: "get" },
-  { path: "/custom", endpointBuilder: makeCustomDeck, method: "post" },
+  // { path: "/custom", endpointBuilder: makeCustomDeck, method: "post" },
 ]);

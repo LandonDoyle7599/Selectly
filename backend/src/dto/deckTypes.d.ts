@@ -15,3 +15,14 @@ export type AddCardsToDeckProps = {
   photoURL?: string | "";
   link?: string | "";
 };
+
+type CardProps = {
+  title: string;
+  content: string;
+}
+
+export type CustomDeckProps = {
+  cards: CardProps[];
+  title: string;
+  type: string;
+}

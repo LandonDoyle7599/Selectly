@@ -83,6 +83,6 @@ const vote =
     };
 
 
-export const decksController = controller("vote", [
+export const voteController = controller("vote", [
   { path: "/", endpointBuilder: vote, method: "post" },
 ]);

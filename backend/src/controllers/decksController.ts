@@ -2,6 +2,10 @@ import { Card, PrismaClient } from "@prisma/client";
 import { RequestHandler } from "express";
 import { AddCardsToDeckProps, CreateVotingDeckProps, CustomDeckProps } from "../dto/deckTypes";
 import { MovieData, MovieDeckCreationBody } from "../dto/movieDeckTypes";
+import {
+  RestaurantData,
+  RestaurantDeckCreationBody,
+} from "../dto/restaurantDeckTypes";
 import { RequestWithJWTBody } from "../dto/types";
 import { controller } from "../lib/controller";
 
@@ -158,10 +162,16 @@ const makeMovieDeck =
         title,
         friends,
       });
-      if (!newDeck) {
-        res.status(404).json({ message: "Invalid Input" });
-        return;
-      }
+    }
+    if (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      await client.votingDeck.delete({
+        where: {
+          id: newDeck.id,
+        },
+      });
+      return;
+    }
 
       // get details for each movie
       let error = false;
@@ -216,13 +226,125 @@ const makeMovieDeck =
     }
   };
 
-  const makeRestaurantsDeck =
+
+const makeRestaurantDeck =
   (client: PrismaClient): RequestHandler =>
   async (req: RequestWithJWTBody, res) => {
     const userId = req.jwtBody?.userId;
+    const { zipcode, quantity, title, friends } =
+      req.body as RestaurantDeckCreationBody;
 
+    if (!zipcode) {
+      res.status(404).json({ message: "No zipcode found" });
+      return;
+    }
+    if (!quantity) {
+      res.status(404).json({ message: "No quantity found" });
+      return;
+    }
 
-  }
+    const geoUrl = `https://maps.google.com/maps/api/geocode/json?components=country:US|postal_code:${zipcode}&key=${process.env.GOOGLE_API_KEY}`;
+
+    let lat = 0;
+    let lng = 0;
+    await fetch(geoUrl, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        let location = json.results[0].geometry.location;
+        lat = location.lat;
+        lng = location.lng;
+      });
+    let foodUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?keyword=restaurant&location=${lat},${lng}&radius=50000&key=${process.env.GOOGLE_API_KEY}`;
+    let allRestaurants: RestaurantData[] = [];
+    await fetch(foodUrl, {
+      method: "GET",
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.status === "OK") {
+          let foodIndeces: number[] = [];
+          for (let i = 0; i < quantity; i++) {
+            if (i >= json.results.length) {
+              break;
+            }
+            let index = Math.floor(Math.random() * json.results.length);
+            while (foodIndeces.includes(index)) {
+              index = Math.floor(Math.random() * json.results.length);
+            }
+            foodIndeces.push(index);
+          }
+          for (let i = 0; i < foodIndeces.length; i++) {
+            allRestaurants.push(json.results[foodIndeces[i]]);
+          }
+        }
+      });
+    if (allRestaurants.length < 1) {
+      res.status(404).json({ message: "No restaurants found" });
+      return;
+    }
+
+    const newDeck = await createNewVotingDeck({
+      client,
+      userId,
+      type: "restaurant",
+      title,
+      friends,
+    });
+    if (!newDeck) {
+      res.status(404).json({ message: "Invalid Input" });
+      return;
+    }
+
+    let error = false;
+    for (let i = 0; i < allRestaurants.length; i++) {
+      const { name, price_level, rating, user_ratings_total, vicinity } =
+        allRestaurants[i];
+      let title = name;
+      let content =
+        "Price Level: " +
+        "$".repeat(price_level) +
+        "\nRating: " +
+        rating +
+        " Stars\n" +
+        "Number of Ratings: " +
+        user_ratings_total +
+        "\n" +
+        "Address: " +
+        vicinity;
+      let card = await addCardToDeck({
+        client,
+        title,
+        content,
+        votingDeckId: newDeck.id,
+      });
+      if (!card) {
+        error = true;
+        break;
+      }
+    }
+    if (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      await client.votingDeck.delete({
+        where: {
+          id: newDeck.id,
+        },
+      });
+      return;
+    }
+
+    let newMovieDeck = await client.votingDeck.findFirst({
+      where: {
+        id: newDeck.id,
+      },
+      include: {
+        users: true,
+        cards: true,
+      },
+    });
+    res.json(newMovieDeck);
+  };
 
 const getDeckById =
   (client: PrismaClient): RequestHandler =>
@@ -358,6 +480,7 @@ const makeCustomDeck =
 
 export const decksController = controller("decks", [
   { path: "/movies", endpointBuilder: makeMovieDeck, method: "post" },
+  { path: "/restaurants", endpointBuilder: makeRestaurantDeck, method: "post" },
   { path: "/:id", endpointBuilder: getDeckById, method: "get" },
   { path: "/history", endpointBuilder: getHistory, method: "get" },
   { path: "/waiting/me", endpointBuilder: getMyIncompleteDecks, method: "get" },

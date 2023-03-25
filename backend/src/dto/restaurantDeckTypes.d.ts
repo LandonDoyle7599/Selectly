@@ -1,15 +1,14 @@
 export type RestaurantDeckCreationBody = {
-    services?: number[] | null
+    zipcode: number
     quantity: number
-    genres?: number[] | null
     title: string
     friends: number[]
 }
 
 export type RestaurantData = {
-    title: string
-    year: number
-    imdb_id: string
-    us_rating: string
-    poster: string
+    name: string
+    price_level: number
+    rating: number
+    user_ratings_total: number
+    vicinity: string
 }

@@ -425,6 +425,7 @@ const getDeckById =
       include: {
         users: true,
         cards: true,
+        votes: true,
       },
     });
     if (!deck) {

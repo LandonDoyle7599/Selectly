@@ -17,7 +17,10 @@ export const Results: FC = () => {
 
     //use effect that fetches results from backend every three seconds
     useEffect(() => {
-        console.log(location.state)
+        if(location.state.results){
+            setVotingResults(location.state.results)
+            return;
+        }
         const interval = setInterval(() => {
             fetchResults()
         }, 3000);
@@ -47,12 +50,12 @@ export const Results: FC = () => {
         <h1>Results</h1>
         <p>Here are the results of your voting deck</p>
         <div>
-            {votingResults?.cards.map((card) => {
+            {votingResults.cards.map((card) => {
                 return(
                     <div>
                         <h2>{card.title}</h2>
                         <p>{card.content}</p>
-                        <p>Number of votes: {card.votes.length}</p>
+                        {/* <p>Number of votes: {card.votes.length}</p> */}
                     </div>
                 )
             })}

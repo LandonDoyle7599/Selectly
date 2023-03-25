@@ -119,7 +119,7 @@ export const Dashboard: FC = () => {
                 >
                   <CardActionArea>
                     <CardContent>
-                      <Typography variant="h1">
+                      <Typography variant="h4">
                         {deck.title}
                       </Typography>
                     </CardContent>

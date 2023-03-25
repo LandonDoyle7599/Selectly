@@ -1,8 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
 import { RequestWithJWTBody, FriendRequestBody } from '../dto/types'
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import { controller } from '../lib/controller'
 
 const addFriend =
@@ -48,6 +46,40 @@ const outgoingRequests =
                     sender: {
                         id: userId
                     }
+                },
+                include: {
+                    receiver: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                            email: true
+                        }
+                    }
+                }
+            })
+
+            res.json({ friendRequests })
+        }
+
+const incomingRequests =
+    (client: PrismaClient): RequestHandler =>
+        async (req: RequestWithJWTBody, res) => {
+            const userId = req.jwtBody?.userId
+
+            const friendRequests = await client.friendRequest.findMany({
+                where: {
+                    receiver: {
+                        id: userId
+                    }
+                },
+                include: {
+                    sender: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                            email: true
+                        }
+                    }
                 }
             })
 
@@ -58,5 +90,5 @@ const outgoingRequests =
 export const friendController = controller('friends', [
     { path: '/invite', endpointBuilder: addFriend, method: 'post' },
     { path: '/outgoing', endpointBuilder: outgoingRequests, method: 'get' },
-    { path: '/incoming', endpointBuilder: addFriend, method: 'get' },
+    { path: '/incoming', endpointBuilder: incomingRequests, method: 'get' },
 ])

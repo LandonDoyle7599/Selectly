@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { RequestHandler } from 'express'
-import { RequestWithJWTBody, FriendRequestBody, FriendRequestReponseBody } from '../dto/types'
+import { RequestWithJWTBody, FriendRequestBody, FriendRequestReponseBody, UnfriendBody } from '../dto/types'
 import { controller } from '../lib/controller'
 
 const seeFriends =
@@ -18,14 +18,12 @@ const seeFriends =
             res.json({ friends: user?.friends })
         }
 
-const addFriend =
+const requestFriend =
     (client: PrismaClient): RequestHandler =>
         async (req: RequestWithJWTBody, res) => {
             const { friendEmail } =
                 req.body as FriendRequestBody
-
             const userId = req.jwtBody?.userId
-
             const friend = await client.user.findFirst({
                 where: {
                     email: friendEmail
@@ -138,24 +136,66 @@ const respondToRequest =
         async (req: RequestWithJWTBody, res) => {
             const userId = req.jwtBody?.userId
             const { friendRequestId, response } = req.body as FriendRequestReponseBody
-            const friendRequest = await client.friendRequest.update({
+            const friendRequest = await client.friendRequest.findUnique({
                 where: {
-                    id: friendRequestId,
-                },
-                data: {
-                    status: response
+                    id: friendRequestId
                 }
             })
-            if (response === "accepted" && friendRequest) {
-                const friendId = friendRequest.senderId;
-                makeFriends(userId, friendId, client)              
+            if (friendRequest) {
+                const newFriendRequest = await client.friendRequest.update({
+                    where: {
+                        id: friendRequestId,
+                    },
+                    data: {
+                        status: response
+                    }
+                })
+                if (response === "accepted" && friendRequest) {
+                    const friendId = friendRequest.senderId;
+                    makeFriends(userId, friendId, client)              
+                }
+                res.json({ newFriendRequest })
+            } else {
+                res.json({message: "Friend request not found"})
             }
-            res.json({ friendRequest })
         }
 
 const unfriend =
     (client: PrismaClient): RequestHandler =>
         async (req: RequestWithJWTBody, res) => {
+            const { friendId } = req.body as UnfriendBody
+            const userId = req.jwtBody?.userId
+            const user = await client.user.findUnique({
+                where: {
+                    id: userId
+                },
+                include: {
+                    friends: true
+                }
+            })
+            const friends = user?.friends
+            let newFriends = friends?.filter(friend => friend.id !== friendId)
+            await client.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    friends: { set: newFriends }
+                }
+            })
+            res.json({})
+        }
+
+const cancelRequest = 
+    (client: PrismaClient): RequestHandler =>
+        async (req: RequestWithJWTBody, res) => {
+            const { friendRequestId } = req.body as FriendRequestReponseBody
+            const friendRequest = await client.friendRequest.delete({
+                where: {
+                    id: friendRequestId
+                }
+            })
+            res.json({})
         }
 
 async function makeFriends(userId: number | undefined, friendId: number | undefined, client: PrismaClient) {
@@ -190,9 +230,10 @@ async function makeFriends(userId: number | undefined, friendId: number | undefi
 
 export const friendController = controller('friends', [
     { path: '/', endpointBuilder: seeFriends, method: 'get'},
-    { path: '/invite', endpointBuilder: addFriend, method: 'post' },
+    { path: '/invite', endpointBuilder: requestFriend, method: 'post' },
     { path: '/outgoing', endpointBuilder: outgoingRequests, method: 'get' },
     { path: '/incoming', endpointBuilder: incomingRequests, method: 'get' },
-    { path: '/respond', endpointBuilder: respondToRequest, method: 'post' },
+    { path: '/response', endpointBuilder: respondToRequest, method: 'post' },
+    { path: '/cancel', endpointBuilder: cancelRequest, method: 'delete' },
     { path: '/unfriend', endpointBuilder: unfriend, method: 'post' },
 ])

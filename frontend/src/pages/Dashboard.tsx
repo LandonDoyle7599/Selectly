@@ -4,13 +4,18 @@ import { Stack } from "@mui/system";
 import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateAuth } from "../hooks/checkAuth";
+import "../styles/dashboard.css";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
 import { TestVoting } from "./TestVoting";
 
+
 export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+
+
   const [votingDeck, setVotingDeck] = useState<VotingDeck>();
   const api = useApi();
   const navigate = useNavigate();
@@ -37,11 +42,29 @@ export const Dashboard: FC = () => {
 
   return (
     <Stack sx={{ width: "100vw", height: "100vh" }} direction="column">
-      <Button variant="contained" onClick={() => navigate("/profile")}>Go to Profile</Button>
-      <Button variant="contained" onClick={() => navigate("/history")}>Go to History</Button>
-      <Button variant="contained" onClick={() => navigate("/createDeck")}>
-        Go to deck creation
-      </Button>
+      <Card
+        sx={{
+          p: 2,
+          m: 4,
+          width: "70%",
+        }}
+      >
+        <Button className="button-dash" onClick={() => navigate("/profile")}>
+          Profile
+        </Button>
+        <Button className="button-dash" onClick={() => navigate("/history")}>
+          History
+        </Button>
+        <Button className="button-dash" onClick={() => navigate("/createDeck")}>
+          Deck creation
+        </Button>
+        <Button
+          className="button-dash"
+          onClick={() => navigate("/startVoting")}
+        >
+          Start voting
+        </Button>
+      </Card>
       <h1>Decks</h1>
         <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ maxWidth: 345 }} onClick={() => navigate("/startvote/movie")}>

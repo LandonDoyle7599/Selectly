@@ -4,6 +4,7 @@ import {
   AddCardsToDeckProps,
   CreateVotingDeckProps,
   CustomDeckProps,
+  CustomStartBody,
 } from "../dto/deckTypes";
 import { MovieData, MovieDeckCreationBody } from "../dto/movieDeckTypes";
 import {
@@ -336,7 +337,7 @@ const makeRestaurantDeck =
       return;
     }
 
-    let newMovieDeck = await client.votingDeck.findFirst({
+    let newFoodDeck = await client.votingDeck.findFirst({
       where: {
         id: newDeck.id,
       },
@@ -345,7 +346,71 @@ const makeRestaurantDeck =
         cards: true,
       },
     });
-    res.json(newMovieDeck);
+    res.json(newFoodDeck);
+  };
+
+const makeVotingFromCustom =
+  (client: PrismaClient): RequestHandler =>
+  async (req: RequestWithJWTBody, res) => {
+    const userId = req.jwtBody?.userId;
+    const { id, friends } = req.body as CustomStartBody;
+    const customDeck = await client.customDeck.findFirst({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        cards: true,
+      },
+    });
+    if (!customDeck) {
+      res.status(404).json({ message: "Custom Deck not found" });
+      return;
+    }
+    const newDeck = await createNewVotingDeck({
+      client,
+      userId,
+      friends,
+      type: "custom",
+      title: customDeck.title,
+    });
+    if (!newDeck) {
+      res.status(404).json({ message: "Invalid Input" });
+      return;
+    }
+    let error = false;
+    for (let i = 0; i < customDeck.cards.length; i++) {
+      const { title, content } = customDeck.cards[i];
+      let card = await addCardToDeck({
+        client,
+        title,
+        content,
+        votingDeckId: newDeck.id,
+      });
+      if (!card) {
+        error = true;
+        break;
+      }
+    }
+    if (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      await client.votingDeck.delete({
+        where: {
+          id: newDeck.id,
+        },
+      });
+      return;
+    }
+    let newCustomDeck = await client.votingDeck.findFirst({
+        where: {
+            id: newDeck.id,
+        },
+        include: {
+            users: true,
+            cards: true,
+        },
+    });
+    res.json(newCustomDeck);
   };
 
 const getDeckById =
@@ -441,43 +506,60 @@ const makeCustomDeck =
   async (req: RequestWithJWTBody, res) => {
     const { cards, title, type } = req.body as CustomDeckProps;
     const userId = req.jwtBody?.userId;
-    const newCards: Card[] = [];
-    const newDeck = await client.votingDeck.create({
+    const newDeck = await client.customDeck.create({
       data: {
         title,
         type,
-        status: "active",
-        users: { connect: { id: userId } },
+        user: { connect: { id: userId } },
       },
     });
+    let error = false;
     for (let i = 0; i < cards.length; i++) {
-      const card = await client.card.create({
-        data: {
-          title: cards[i].title,
-          content: cards[i].content,
-        },
+      const card = await addCardToDeck({
+        client,
+        title: cards[i].title,
+        content: cards[i].content,
+        customDeckId: newDeck.id,
       });
-      await client.votingDeck.update({
+      if (!card) {
+        error = true;
+        break;
+      }
+    }
+    if (error) {
+      res.status(500).json({ message: "Internal Server Error" });
+      await client.customDeck.delete({
         where: {
           id: newDeck.id,
         },
-        data: {
-          cards: { connect: { id: card.id } },
-        },
       });
-      newCards.push(card);
+      return;
     }
 
-    const deck = await client.votingDeck.findUnique({
+    const deck = await client.customDeck.findUnique({
       where: {
         id: newDeck.id,
       },
       include: {
-        users: true,
         cards: true,
       },
     });
     res.json({ deck });
+  };
+
+const getAllCustom =
+  (client: PrismaClient): RequestHandler =>
+  async (req: RequestWithJWTBody, res) => {
+    const userId = req.jwtBody?.userId;
+    const decks = await client.customDeck.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        cards: true,
+      },
+    });
+    res.json(decks);
   };
 
 export const decksController = controller("decks", [
@@ -492,4 +574,10 @@ export const decksController = controller("decks", [
     method: "get",
   },
   { path: "/custom", endpointBuilder: makeCustomDeck, method: "post" },
+  {
+    path: "/custom/start",
+    endpointBuilder: makeVotingFromCustom,
+    method: "post",
+  },
+  { path: "/custom/all", endpointBuilder: getAllCustom, method: "get" },
 ]);

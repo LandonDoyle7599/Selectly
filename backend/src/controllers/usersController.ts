@@ -22,7 +22,7 @@ const createUser =
             res.status(400).json({ message: 'Email already exists' })
             return
         }
-
+        console.log('password', password)
         const passwordHash = await bcrypt.hash(password, 10)
         const user = await client.user.create({
             data: {

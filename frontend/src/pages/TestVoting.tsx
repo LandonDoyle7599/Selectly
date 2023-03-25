@@ -26,9 +26,16 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
         vote: vote,
       })
       .then((res) => {
-        console.log(res);
         if (index < votingDeck.cards.length - 1) {
           setIndex(index + 1);
+          return;
+        }
+        if(Object.keys(res).length === 0){
+          navigate('/results', {state: {id: votingDeck.id, results: {}}})
+        }if(res.finalDeck){
+          navigate('/results', {state: {id: res.finalDeck.id, results: res.finalDeck}})
+        }else{
+
         }
       });
   };
@@ -45,7 +52,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
         <CardMedia sx={{ height: "100%" }} image={activeCard?.photoURL ? activeCard.photoURL : ""} title={activeCard?.title} />
         <CardContent>
           <Typography variant="h4">{activeCard?.title}</Typography>
-          <Typography variant="body1">{activeCard?.content}</Typography>
+          <Typography variant="body1" whiteSpace={"pre-line"}>{activeCard?.content}</Typography>
         </CardContent>
       </Card>
       <Card>

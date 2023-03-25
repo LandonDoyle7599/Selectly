@@ -45,9 +45,13 @@ const outgoingRequests =
 
             const friendRequests = await client.friendRequest.findMany({
                 where: {
-                    senderId: userId
+                    sender: {
+                        id: userId
+                    }
                 }
             })
+
+            res.json({ friendRequests })
         }
 
 

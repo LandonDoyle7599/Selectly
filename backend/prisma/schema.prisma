@@ -77,7 +77,7 @@ model Vote {
 
 model FriendRequest {
     id        Int      @id @default(autoincrement())
-    status    String
+    status    String    
     senderId  Int
     receiverId Int
     sender    User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)

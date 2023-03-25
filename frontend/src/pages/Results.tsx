@@ -17,7 +17,7 @@ export const Results: FC = () => {
 
     //use effect that fetches results from backend every three seconds
     useEffect(() => {
-        if(location.state.results){
+        if(location.state.results !== null){
             setVotingResults(location.state.results)
             return;
         }
@@ -36,7 +36,7 @@ export const Results: FC = () => {
     }
     
 
-    if(location.state.id && !votingResults){
+    if(!votingResults){
         return(
             <div>
                 <h1>Results</h1>

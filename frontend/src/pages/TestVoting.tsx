@@ -31,7 +31,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
           return;
         }
         if(Object.keys(res).length === 0){
-          navigate('/results', {state: {id: votingDeck.id, results: {}}})
+          navigate('/results', {state: {id: votingDeck.id, results: null}})
         }if(res.finalDeck){
           navigate('/results', {state: {id: res.finalDeck.id, results: res.finalDeck}})
         }else{

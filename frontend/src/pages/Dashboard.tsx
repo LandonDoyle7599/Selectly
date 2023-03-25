@@ -36,14 +36,14 @@ export const Dashboard: FC = () => {
   const api = useApi();
   const navigate = useNavigate();
   validateAuth();
-
+  
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/home");
   };
-
+  
   useEffect(() => {
-    console.log("here");
+    const interval = setInterval(() => {
     api.get("decks/waiting/me").then((res) => {
       if (!res.message) {
         setVotingDecks(res);
@@ -55,6 +55,8 @@ export const Dashboard: FC = () => {
         setCustomDecks(res);
       }
     });
+  }, 3000);
+  return () => clearInterval(interval);
   }, []);
 
   if (open && votingDecks !== undefined) {

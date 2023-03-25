@@ -41,7 +41,7 @@ export const StartCustom: FC = () => {
     onSubmit: (values, { setSubmitting }) => {
       setError(null);
       api
-        .post("decks/restaurants", {
+        .post("decks/custom/start", {
           id: values.id,
           friends: values.friends,
         })

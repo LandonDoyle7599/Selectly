@@ -1,4 +1,4 @@
-export type MovieDeckCreationBody = {
+export type RestaurantDeckCreationBody = {
     services?: number[] | null
     quantity: number
     genres?: number[] | null
@@ -6,7 +6,7 @@ export type MovieDeckCreationBody = {
     friends: number[]
 }
 
-export type MovieData = {
+export type RestaurantData = {
     title: string
     year: number
     imdb_id: string

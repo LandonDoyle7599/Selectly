@@ -83,7 +83,7 @@ export const Dashboard: FC = () => {
             <RestaurantCard/>
       </Grid>
       <h1>Pending Votes</h1>
-      {votingDeck !== undefined && (
+      {votingDecks !== undefined && (
         <Grid item xs={12} sm={6} md={4} spacing={1}>
             <Card sx={{ maxWidth: 345 }} onClick={() => setOpen(true)}>
                 <CardActionArea>
@@ -95,7 +95,7 @@ export const Dashboard: FC = () => {
                     />
                     <CardContent>
                         <Typography variant="body2" color="text.secondary">
-                            {votingDeck[0]?.title}
+                            {votingDecks[0]?.title}
                             </Typography>
                     </CardContent>
                 </CardActionArea>

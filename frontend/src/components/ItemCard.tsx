@@ -28,14 +28,10 @@ export const ItemCard = (props: CardProps) => {
   return (
     <Stack>
       <Card>
-        <CardMedia
-          sx={{ height: "100%" }}
-          image={props.imageURL}
-          title="movie"
-        />
+        <CardMedia sx={{ height: "100%" }} image={imageURL} title={title} />
         <CardContent>
-          <Typography variant="h4">{props.title}</Typography>
-          <Typography variant="body1">{props.description}</Typography>
+          <Typography variant="h4">{title}</Typography>
+          <Typography variant="body1">{description}</Typography>
         </CardContent>
       </Card>
       <Card>

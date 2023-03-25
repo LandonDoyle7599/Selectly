@@ -1,4 +1,4 @@
-import { Card, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { RequestHandler } from "express";
 import { AddCardsToDeckProps, CreateVotingDeckProps } from "../dto/deckTypes";
 import { MovieData, MovieDeckCreationBody } from "../dto/movieDeckTypes";
@@ -96,6 +96,7 @@ const makeMovieDeck =
 
     if (friends.length < 1) {
       res.status(404).json({ message: "Not enough friends" });
+      return;
     }
 
     const newDeck = await createNewVotingDeck({
@@ -106,7 +107,12 @@ const makeMovieDeck =
       friends,
     }).catch((err) => {
       res.status(500).json({ message: "Internal Server Error" });
+      return;
     });
+    if (!newDeck) {
+        res.status(500).json({ message: "Internal Server Error" });
+        return;
+    }
 
     // build url to request to api for list of titles
     const url = "https://api.watchmode.com/v1/";
@@ -164,9 +170,11 @@ const makeMovieDeck =
       })
       .catch((err) => {
         res.status(500).json({ message: "Internal Server Error" });
+        return
       });
 
     // get details for each movie
+    let error = false;
     for (let i = 0; i < movieIds.length; i++) {
       let jsonMovieData = {} as MovieData;
       await fetch(
@@ -181,7 +189,7 @@ const makeMovieDeck =
           jsonMovieData = json;
         })
         .catch((err) => {
-          res.status(500).json({ message: "Internal Server Error" });
+            error = true;
         });
       const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
       let content = "Year: " + year + " Rating: " + us_rating;
@@ -194,9 +202,13 @@ const makeMovieDeck =
         photoURL: poster,
         link,
       }).catch((err) => {
-        res.status(500).json({ message: "Internal Server Error" });
+        error = true;
       });
     }
+    if (error) {
+        res.status(500).json({ message: "Internal Server Error" });
+        return
+    } 
 
     let newMovieDeck = await client.votingDeck.findFirst({
       where: {

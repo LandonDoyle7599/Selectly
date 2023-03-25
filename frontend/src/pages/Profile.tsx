@@ -6,9 +6,11 @@ import { useFormik } from "formik";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import backgroundImage from "../../public/Mountain.png";
 import { Friends } from "../components/Friends";
 import { useApi } from "../hooks/useApi";
 import { FriendRequest, User } from "../models";
+import "../styles/background.css";
 import {
   buttonSx,
   liteBackground,
@@ -124,7 +126,7 @@ export const Profile: FC = () => {
   };
 
   return (
-    <>
+    <div className="root">
       <Typography variant="h2">Profile</Typography>
       <Button
         variant="contained"
@@ -180,10 +182,22 @@ export const Profile: FC = () => {
           >
             Save
           </Button>
+
+          <Button
+            sx={{
+              margin: "15px",
+              backgroundColor: liteBackground,
+              boxShadow: "10",
+            }}
+            variant="contained"
+            onClick={() => setOpenUpdateUser(false)}
+          >
+            Close
+          </Button>
         </div>
       </Dialog>
 
       <Friends></Friends>
-    </>
+    </div>
   );
 };

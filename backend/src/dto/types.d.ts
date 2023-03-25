@@ -20,6 +20,13 @@ export type CreateUserBody = {
     password: string
 }
 
+export type UpdateUserBody = {
+    firstName?: string
+    lastName?: string
+    email?: string
+    password?: string
+}
+
 export type FriendRequestBody = {
     friendEmail: string
 }

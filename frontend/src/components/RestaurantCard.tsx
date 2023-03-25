@@ -7,7 +7,7 @@ export const RestaurantCard = () => {
     const navigate = useNavigate();
 
     return (
-        <Card sx={{ maxWidth: 345 }} onClick={() => navigate("/startvote/restaurant")}>
+        <Card sx={{ maxWidth: 345, minHeight:130}} onClick={() => navigate("/startvote/restaurant")}>
                 <CardActionArea>
                     <CardMedia
                         component="img"

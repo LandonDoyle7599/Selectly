@@ -50,9 +50,10 @@ export interface Card {
 
 export interface Vote {
     id: number
-    deck: VotingDeck
-    user: User
-    card: Card
+    deckId: number
+    userId: number
+    vote: boolean
+    cardId: number
     createdAt: Date
     updatedAt: Date
 }

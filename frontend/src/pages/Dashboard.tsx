@@ -24,7 +24,6 @@ import { RestaurantCard } from "../components/RestaurantCard";
 import { CustomDeck } from "../components/CustomDeck";
 import { AddCustomDeck } from "../components/AddCustomDeck";
 
-
 export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -36,27 +35,27 @@ export const Dashboard: FC = () => {
   const api = useApi();
   const navigate = useNavigate();
   validateAuth();
-  
+
   const logout = () => {
     localStorage.removeItem("token");
     navigate("/home");
   };
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
-    api.get("decks/waiting/me").then((res) => {
-      if (!res.message) {
-        setVotingDecks(res);
-      }
-    });
+      api.get("decks/waiting/me").then((res) => {
+        if (!res.message) {
+          setVotingDecks(res);
+        }
+      });
 
-    api.get("decks/custom/all").then((res) => {
-      if (!res.message) {
-        setCustomDecks(res);
-      }
-    });
-  }, 3000);
-  return () => clearInterval(interval);
+      api.get("decks/custom/all").then((res) => {
+        if (!res.message) {
+          setCustomDecks(res);
+        }
+      });
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   if (open && votingDecks !== undefined) {
@@ -86,36 +85,54 @@ export const Dashboard: FC = () => {
         </Button>
       </Card>
       <h1>Decks</h1>
-        <Grid item xs={12} sm={6} md={4} spacing={1}>
-            <MovieCard/>
-            <RestaurantCard/>
-            {
-              customDecks?.map((deck) => {
-                  return (
-                      <CustomDeck title={deck.title} id={deck.id}/>
-                  );
-              })
-            }
-            <AddCustomDeck/>
+      <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          <Grid item xs={4} sm={4} md={4} key={-2}>
+
+        <MovieCard />
+          </Grid>
+        <Grid item xs={4} sm={4} md={4} key={-1}>
+          
+        <RestaurantCard />
+        </Grid>
+        {customDecks?.map((deck, i) => {
+          return(
+          <Grid item xs={4} sm={4} md={4} key={i}>
+          <CustomDeck title={deck.title} id={deck.id} />;
+          </Grid>
+          )
+        })}
+        <Grid item xs={4} sm={4} md={4} key={-3}>
+        <AddCustomDeck />
+        </Grid>
       </Grid>
       <h1>Pending Votes</h1>
       {votingDecks !== undefined && (
-        <Grid item xs={12} sm={6} md={4} spacing={1}>
-            {
-              votingDecks?.map((deck) => {
-                  return (
-                      <Card color="purple" sx={{ maxWidth: 345 }} onClick={() => setOpen(true)}>
-                          <CardActionArea>
-                              <CardContent>
-                                  <Typography variant="body2" color="text.secondary">
-                                      {deck.title}
-                                  </Typography>
-                              </CardContent>
-                          </CardActionArea>
-                      </Card>
-                  );
-              })
-            }
+        <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          {votingDecks?.map((deck, i) => {
+            return (
+              <Grid item xs={4} sm={4} md={4} key={i} onClick={() => setOpen(true)}>
+                <Card
+                    sx={{ maxWidth: 345, minHeight:130}}
+                >
+                  <CardActionArea>
+                    <CardContent>
+                      <Typography variant="h1">
+                        {deck.title}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            );
+          })}
         </Grid>
       )}
     </Stack>

@@ -68,3 +68,21 @@ export function getTopSelection(deck: VotingDeck) : {} {
     }
 }
 
+export interface CardsToVoteCount {
+    [key: string]: number;
+}
+
+//function that maps card objects to a count of votes from vote objects in the deck
+export function getCardVotes(deck: VotingDeck) : CardsToVoteCount {
+    const cardVotes: CardsToVoteCount = {};
+    for (const card of deck.cards) {
+        cardVotes[card.title] = deck.votes.filter(vote => vote.cardId === card.id && vote.vote === true).length;
+    }
+    //sort object by keys in descending order
+    const sortedCardVotes: CardsToVoteCount = {};
+    Object.keys(cardVotes).sort().reverse().forEach(function(key) {
+        sortedCardVotes[key] = cardVotes[key];
+    });
+    return sortedCardVotes;
+}
+

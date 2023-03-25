@@ -7,7 +7,7 @@ export const MovieCard = () => {
     const navigate = useNavigate();
 
     return (
-        <Card sx={{ maxWidth: 345 }} onClick={() => navigate("/startvote/movie")}>
+        <Card sx={{ maxWidth: 345, minHeight: 130 }} onClick={() => navigate("/startvote/movie")}>
                 <CardActionArea>
                     <CardMedia
                         component="img"

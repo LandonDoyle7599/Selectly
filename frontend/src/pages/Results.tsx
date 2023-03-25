@@ -1,8 +1,10 @@
 import { Button, Typography } from "@material-ui/core";
+import { Stack } from "@mui/material";
 import React, {FC, useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
+import { getCardVotes } from "../utils/helperFunctions";
 
 export interface ResultState{
     results: VotingDeck
@@ -14,6 +16,7 @@ export const Results: FC = () => {
     const location = useLocation();
     const [votingResults, setVotingResults] = useState<VotingDeck>();
     const api = useApi();
+    const [open, setOpen] = useState(false);
 
     //use effect that fetches results from backend every three seconds
     useEffect(() => {
@@ -46,21 +49,25 @@ export const Results: FC = () => {
     }
     
     return (
-        <div>
-        <h1>Results</h1>
-        <p>Here are the results of your voting deck</p>
-        <div>
-            {votingResults.cards.map((card) => {
+        <Stack sx={{justifyContent:"center", alignItems:"center", width:"100vw", height:"100vh"}}>
+        <Typography variant="h1">Results</Typography>
+        <Typography variant="body1">Here are the results of your voting deck</Typography>
+            {Object.entries(getCardVotes(votingResults)).map(([key, value] , i) => {
+                if(i===0){
                 return(
-                    <div>
-                        <h2>{card.title}</h2>
-                        <p>{card.content}</p>
-                        {/* <p>Number of votes: {card.votes.length}</p> */}
-                    </div>
-                )
-            })}
-        </div>
-        <Button onClick={() => navigate("/dashboard")}>Return to dashboard</Button>
-        </div>
+                        <Typography variant="h4">You Chose {key}</Typography>
+            )
+}})}
+            <Button variant="outlined" onClick={() => setOpen(!open)}>Toggle full results</Button>
+            {open && Object.entries(getCardVotes(votingResults)).map(([key, value], i) => {
+                return(
+                    <>
+                        <Typography variant="body1">Option: {key}</Typography>
+                        <Typography variant="body2">Votes: {value}</Typography>
+                    </>
+                )}
+            )}  
+        <Button variant="contained" onClick={() => navigate("/dashboard")}>Return to dashboard</Button>
+        </Stack>
     );
     };

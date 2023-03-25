@@ -11,7 +11,6 @@ export const StartVote: FC = () => {
     
     return(
         <div>
-            <h1>StartVote</h1>
             {type==="movie"&&<StartMovie/>}
             <Button onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
         </div>

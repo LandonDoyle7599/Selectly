@@ -1,0 +1,13 @@
+:root {
+  --bc: "white";
+}
+
+.button-dash {
+  border-radius: 5%;
+  color: var(--bc);
+}
+
+.button-dash:hover {
+  background-color: #2e78f0;
+  color: #2e78f0;
+}

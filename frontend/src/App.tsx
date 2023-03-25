@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+
+import  { useState } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
-  useLocation,
 } from "react-router-dom";
-import { Vote } from "./components/Vote";
+import { AccountIcon } from "./components/AccountIcon";
 import { ApiContext } from "./contexts/api";
 import { Api } from "./lib/api";
 import CreateAccount from "./pages/CreateAccount";
@@ -15,9 +15,12 @@ import Home from "./pages/Home";
 import { Login } from "./pages/Login";
 import { Profile } from "./pages/Profile";
 import { StartVote } from "./pages/StartVote";
+
+
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <AccountIcon/>,
     children: [
       {
         path: "login",
@@ -59,6 +62,8 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
+
 
 export const App = () => {
   const [api, setApi] = useState(new Api());

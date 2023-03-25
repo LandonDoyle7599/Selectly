@@ -1,22 +1,27 @@
 import React, { FC, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Select, MenuItem, TextField } from "@mui/material";
+import { Select, MenuItem, TextField, Button } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useApi } from "../hooks/useApi";
 import { Services, Genres } from "../enums";
-import { formikTextFieldNumberProps, formikTextFieldProps } from "../utils/helperFunctions";
-import { User } from "../models";
+import { formikTextFieldNumberProps, formikTextFieldProps, removeLeadingUnderscoresAndConvertToIntArray } from "../utils/helperFunctions";
+import { User, VotingDeck } from "../models";
+import { TestVoting } from "../pages/TestVoting";
 export const StartMovie: FC = () => {
   const navigate = useNavigate();
   const api = useApi();
   const [error, setError] = useState<string | null>(null);
   const [friends, setFriends] = useState<User[]>();
+  const [votingDeck, setVotingDeck] = useState<VotingDeck>();
+  const [showVoting, setShowVoting] = useState(false);
 
 
   useEffect(() => {
-    api.get("users/friends").then((res) => {
-        setFriends(res);
+    api.get("friends/").then((res) => {
+        if(res.friends){
+        setFriends(res.friends);
+        }
     });
     }, []);
 
@@ -37,18 +42,38 @@ export const StartMovie: FC = () => {
     }),
     onSubmit: (values, { setSubmitting }) => {
       setError(null);
+      console.log('here')
       api
         .post("decks/movies", {
           title: values.title,
-          genres: values.genres,
-          services: values.services,
+          genres: removeLeadingUnderscoresAndConvertToIntArray(values.genres),
+          services: removeLeadingUnderscoresAndConvertToIntArray(values.services),
           quantity: values.quantity,
           friends: values.friends,
         })
-        .then((res) => {})
+        .then((res) => {
+            if(!res.message){
+                setVotingDeck(res);
+                setShowVoting(true);
+            }
+            else{
+                setError(res.message);
+            }
+        })
         .then(() => setSubmitting(false));
     },
   });
+
+  const printValues = () => {
+    console.log(formik.values);
+    console.log(removeLeadingUnderscoresAndConvertToIntArray(formik.values.genres));
+    console.log(removeLeadingUnderscoresAndConvertToIntArray(formik.values.services));
+    };
+
+    if(showVoting && votingDeck){
+        return <TestVoting votingDeck={votingDeck}/>
+    }
+
 
   return (
     <div>
@@ -102,6 +127,7 @@ export const StartMovie: FC = () => {
                 </MenuItem>
         ))}
         </Select>
+        <Button variant="contained" onClick={formik.submitForm}>Submit</Button>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { useApi } from "../hooks/useApi";
 import * as yup from "yup";
 import { FriendRequest, User } from "../models";
 import { formikTextFieldProps } from "../utils/helperFunctions";
+import { Typography } from "@material-ui/core";
 
 export const Profile: FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export const Profile: FC = () => {
   const [sentFriendRequests, setSentFriendRequests] = useState<FriendRequest[]>(
     []
   );
-  const [pendingFriendRequests, setPendingFriendRequests] = useState<
+  const [receivedFriendRequests, setReceivedFriendRequests] = useState<
     FriendRequest[]
   >([]);
   const [open, setOpen] = useState(false);
@@ -62,9 +63,14 @@ export const Profile: FC = () => {
       api.get("users/me").then((res) => {
         if (res.user) {
           setUser(res);
-          formik.values["firstName"] = res.user.firstName;
-          formik.values["lastName"] = res.user.lastName;
-          formik.values["email"] = res.user.email;
+          formik.resetForm({
+            values: {
+              firstName: res.user.firstName,
+              lastName: res.user.lastName,
+              email: res.user.email,
+              password: res.user.password,
+            },
+          });
         } else {
           throw new Error(res.message);
         }
@@ -81,8 +87,8 @@ export const Profile: FC = () => {
       api.get("friends/incoming").then((res) => {
         if (res.friendRequests) {
           res.friendRequests.length > 0
-            ? setPendingFriendRequests(res.friendRequests)
-            : setPendingFriendRequests([]);
+            ? setReceivedFriendRequests(res.friendRequests)
+            : setReceivedFriendRequests([]);
         } else {
           throw new Error(res.message);
         }
@@ -105,11 +111,11 @@ export const Profile: FC = () => {
 
   const save = () => {
     api
-      .put("users/me", {
+      .post("users/update", {
         firstName: formik.values.firstName,
         lastName: formik.values.lastName,
         email: formik.values.email,
-        password: formik.values.password,
+        password: formik.values.password !== undefined ? formik.values.password : "",
       })
       .then((res) => {
         if (res.user) {
@@ -126,14 +132,14 @@ export const Profile: FC = () => {
 
   const acceptFriendRequest = (friendRequest: FriendRequest) => {
     api
-      .put("friends/response", {
+      .post("friends/response", {
         friendRequestId: friendRequest.id,
         response: "accepted",
       })
       .then((res) => {
         if (res.friendRequest) {
-          setPendingFriendRequests(
-            pendingFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
+          setReceivedFriendRequests(
+            receivedFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
           );
           setFriends(friends?.concat(friendRequest.sender));
         } else {
@@ -147,14 +153,14 @@ export const Profile: FC = () => {
 
   const declineFriendRequest = (friendRequest: FriendRequest) => {
     api
-      .put("friends/response", {
+      .post("friends/response", {
         friendRequestId: friendRequest.id,
         response: "declined",
       })
       .then((res) => {
         if (res.friendRequest) {
-          setPendingFriendRequests(
-            pendingFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
+          setReceivedFriendRequests(
+            receivedFriendRequests?.filter((fr) => fr.id !== friendRequest.id)
           );
         } else {
           throw new Error(res.message);
@@ -167,7 +173,7 @@ export const Profile: FC = () => {
 
   const cancelFriendRequest = (friendRequest: FriendRequest) => {
     api
-      .put("friends/cancel", { friendRequestId: friendRequest.id })
+      .post("friends/cancel", { friendRequestId: friendRequest.id })
       .then((res) => {
         if (res.friendRequest) {
           setSentFriendRequests(
@@ -184,7 +190,7 @@ export const Profile: FC = () => {
 
   const unfriend = (friend: User) => {
     api
-      .put("friends/unfriend", { friendId: friend.id })
+      .post("friends/unfriend", { friendId: friend.id })
       .then((res) => {
         if (res.friend) {
           setFriends(friends?.filter((f) => f.id !== friend.id));
@@ -219,7 +225,7 @@ export const Profile: FC = () => {
       <Button onClick={() => setOpen(true)}>Send Friend Request</Button>
       <Modal open={open} onClose={() => setOpen(false)}>
         <Stack direction={"column"}>
-          <h2>Send Friend Request</h2>
+          <Typography variant="h1">Send Friend Request</Typography>
           <TextField
             label="Email"
             variant="outlined"
@@ -231,54 +237,32 @@ export const Profile: FC = () => {
       </Modal>
       <h2>Account Info</h2>
       <TextField
-        value={formik.values["firstName"]}
-        onChange={() => {
-          formik.handleChange;
-          setDataChanged(true);
-        }}
-        error={formik.touched["firstName"] && !!formik.errors["firstName"]}
-        label="First Name"
+      {...formikTextFieldProps(formik, "firstName", "First Name")}
         variant="outlined"
       />
       <TextField
-        value={formik.values["lastName"]}
-        onChange={() => {
-          formik.handleChange;
-          setDataChanged(true);
-        }}
-        error={formik.touched["lastName"] && !!formik.errors["lastName"]}
-        label="Last Name"
+        {...formikTextFieldProps(formik, "lastName", "Last Name")}
         variant="outlined"
       />
       <TextField
-        value={formik.values["email"]}
-        onChange={() => {
-          formik.handleChange;
-          setDataChanged(true);
-        }}
-        error={formik.touched["email"] && !!formik.errors["email"]}
-        label="Email"
+        {...formikTextFieldProps(formik, "email", "Email")}
         variant="outlined"
+        disabled
       />
       <TextField
-        value={formik.values["password"]}
-        onChange={() => {
-          formik.handleChange;
-          setDataChanged(true);
-        }}
-        error={formik.touched["password"] && !!formik.errors["password"]}
-        label="Password"
+        {...formikTextFieldProps(formik, "password", "Password")}
+        type="password"
         variant="outlined"
       />
-      <Button disabled={!dataChanged} onChange={save}>
+      <Button disabled={!formik.dirty} onClick={save}>
         Save
       </Button>
       <h2>Friends</h2>
       {friends?.map((friend) => {
         return (
-          <Stack direction={"row"}>
-            <h3>Friends</h3>
-            <Button>Remove Friend</Button>
+            <Stack direction={"row"}>
+            <h3>{friend.firstName} {friend.lastName}</h3>
+            <Button onClick={() => unfriend(friend)}>Remove Friend</Button>
           </Stack>
         );
       })}
@@ -297,12 +281,12 @@ export const Profile: FC = () => {
         );
       })}
       <h2>Friend Requests</h2>
-      {pendingFriendRequests?.map((friendRequest) => {
+      {receivedFriendRequests?.map((friendRequest) => {
         return (
           <Stack direction={"row"}>
             <h3>
-              {friendRequest.receiver.firstName}{" "}
-              {friendRequest.receiver.lastName}
+              {friendRequest.sender.firstName}{" "}
+              {friendRequest.sender.lastName}
             </h3>
             <Button onClick={() => acceptFriendRequest(friendRequest)}>
               Accept

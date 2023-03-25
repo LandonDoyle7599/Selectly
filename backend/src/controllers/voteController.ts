@@ -33,6 +33,16 @@ const vote =
           vote
         }
       });
+      const newDeck = await client.votingDeck.findUnique({
+        where: {
+          id: deckId
+        },
+        include: {
+          votes: true,
+          cards: true,
+          users: true,
+        },
+      });
 
       await client.votingDeck.update({
         where: {
@@ -43,7 +53,7 @@ const vote =
         }
       });
 
-      const allVotes = deck?.votes;
+      const allVotes = newDeck?.votes;
       let userVoteCount = 0;
       if (allVotes) {
         for (let vote of allVotes) {
@@ -74,15 +84,17 @@ const vote =
               status: "finished"
             },
           });
-          res.json({ finalDeck })
+          res.json({ finalDeck });
+          return;
         }
       } else {
-        res.json({ waitingForFriends: true })
+        res.json({ waitingForFriends: true });
+        return;
       }
       res.json({});
     };
 
 
-export const decksController = controller("vote", [
+export const voteController = controller("vote", [
   { path: "/", endpointBuilder: vote, method: "post" },
 ]);

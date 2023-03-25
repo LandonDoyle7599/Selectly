@@ -14,6 +14,7 @@ import { StartVote } from "./pages/StartVote";
 
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Results } from "./pages/Results";
+import { TestVoting } from "./pages/TestVoting";
 
 const theme = createTheme({
   palette: {
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
         path: "/home",
         element: <Home />,
       },
+      {
+        path:'vote',
+        element: <TestVoting/>
+      }
     ],
   },
 ]);

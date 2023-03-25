@@ -68,7 +68,7 @@ export const StartMovie: FC = () => {
         .then((res) => {
           if (!res.message) {
             setVotingDeck(res);
-            setShowVoting(true);
+            navigate('/vote', { state: { votingDeck: res } });
           } else {
             setError(res.message);
           }
@@ -76,10 +76,6 @@ export const StartMovie: FC = () => {
         .then(() => setSubmitting(false));
     },
   });
-
-  if (showVoting && votingDeck) {
-    return <TestVoting votingDeck={votingDeck} />;
-  }
 
   return (
     <Stack direction={"column"} sx={{backgroundColor: secondaryColor}}>

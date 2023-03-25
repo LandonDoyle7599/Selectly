@@ -48,7 +48,7 @@ export const StartCustom: FC = () => {
         .then((res) => {
             if(!res.message){
                 setVotingDeck(res);
-                setShowVoting(true);
+                navigate('/vote', {state: {votingDeck: res}})
             }
             else{
                 setError(res.message);
@@ -57,10 +57,6 @@ export const StartCustom: FC = () => {
         .then(() => setSubmitting(false));
     },
   });
-
-    if(showVoting && votingDeck){
-        return <TestVoting votingDeck={votingDeck}/>
-    }
 
 
   return (

@@ -55,7 +55,7 @@ export const Dashboard: FC = () => {
           setCustomDecks(res);
         }
       });
-    }, 3000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -90,7 +90,7 @@ export const Dashboard: FC = () => {
         <MovieCard />
           </Grid>
         <Grid item xs={4} sm={4} md={4} key={-1}>
-          
+
         <RestaurantCard />
         </Grid>
         {customDecks?.map((deck, i) => {
@@ -113,7 +113,7 @@ export const Dashboard: FC = () => {
         >
           {votingDecks?.map((deck, i) => {
             return (
-              <Grid item xs={4} sm={4} md={4} key={i} onClick={() => setOpen(true)}>
+              <Grid item xs={4} sm={4} md={4} key={i} onClick={() => navigate("/vote", {state: {votingDeck: deck}})}>
                 <Card
                     sx={{ maxWidth: 345, minHeight:130}}
                 >

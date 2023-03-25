@@ -3,36 +3,32 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import React, { FC, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import { useApi } from "../hooks/useApi";
 import { Card as Alias, VotingDeck } from "../models";
 import { primaryColor } from "../styles/FormStyle";
 
-export interface TestVotingProps {
-  votingDeck: VotingDeck;
-}
-
-export const TestVoting: FC<TestVotingProps> = (props) => {
+export const TestVoting: FC = () => {
   const navigate = useNavigate();
   const api = useApi();
-  const { votingDeck } = props;
+  const location = useLocation();
   const [index, setIndex] = useState(0);
   const [activeCard, setActiveCard] = useState<Alias>();
     console.log(activeCard?.photoURL)
   const castVote = (vote: boolean) => {
     api
       .post("vote/", {
-        deckId: votingDeck.id,
-        cardId: votingDeck.cards[index].id,
+        deckId: location.state.votingDeck.id,
+        cardId: location.state.votingDeck.cards[index].id,
         vote: vote,
       })
       .then((res) => {
-        if (index < votingDeck.cards.length - 1) {
+        if (index < location.state.votingDeck.cards.length - 1) {
           setIndex(index + 1);
           return;
         }
         if(Object.keys(res).length === 0){
-          navigate('/results', {state: {id: votingDeck.id, results: null}})
+          navigate('/results', {state: {id: location.state.votingDeck.id, results: null}})
         }if(res.finalDeck){
           navigate('/results', {state: {id: res.finalDeck.id, results: res.finalDeck}})
         }else{
@@ -42,7 +38,7 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
   };
 
   useEffect(() => {
-    setActiveCard(votingDeck.cards[index]);
+    setActiveCard(location.state.votingDeck.cards[index]);
   }, [index]);
 
   return (

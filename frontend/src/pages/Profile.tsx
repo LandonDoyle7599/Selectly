@@ -6,10 +6,17 @@ import { useFormik } from "formik";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import backgroundImage from "../../public/Mountain.png";
 import { Friends } from "../components/Friends";
 import { useApi } from "../hooks/useApi";
 import { FriendRequest, User } from "../models";
-import { buttonSx, primaryColor, secondaryColor } from "../styles/FormStyle";
+import "../styles/background.css";
+import {
+  buttonSx,
+  liteBackground,
+  primaryColor,
+  secondaryColor,
+} from "../styles/FormStyle";
 import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Profile: FC = () => {
@@ -119,7 +126,7 @@ export const Profile: FC = () => {
   };
 
   return (
-    <>
+    <div className="root">
       <Typography variant="h2">Profile</Typography>
       <Button
         variant="contained"
@@ -135,7 +142,7 @@ export const Profile: FC = () => {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ marginLeft: "10", alignItems: "right" }}
+            sx={{ marginLeft: "10", marginRight: "5" }}
             onClick={() => setOpenUpdateUser(true)}
           >
             Update Account Info
@@ -175,11 +182,22 @@ export const Profile: FC = () => {
           >
             Save
           </Button>
+
+          <Button
+            sx={{
+              margin: "15px",
+              backgroundColor: liteBackground,
+              boxShadow: "10",
+            }}
+            variant="contained"
+            onClick={() => setOpenUpdateUser(false)}
+          >
+            Close
+          </Button>
         </div>
       </Dialog>
-      <Card>
-        <Friends></Friends>
-      </Card>
-    </>
+
+      <Friends></Friends>
+    </div>
   );
 };

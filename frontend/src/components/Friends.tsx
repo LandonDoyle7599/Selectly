@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useApi } from "../hooks/useApi";
 import { FriendRequest, User } from "../models";
-import { buttonSx } from "../styles/FormStyle";
+import { buttonSx, liteBackground } from "../styles/FormStyle";
 import { formikTextFieldProps } from "../utils/helperFunctions";
 
 export const Friends = () => {
@@ -193,7 +193,15 @@ export const Friends = () => {
   };
 
   return (
-    <>
+    <Card
+      style={{
+        flex: "center",
+        backgroundColor: liteBackground,
+        borderSpacing: "5",
+        paddingLeft: "10%",
+        width: "35%",
+      }}
+    >
       <h2>Current Friends</h2>
       {friends?.map((friend) => {
         return (
@@ -302,7 +310,12 @@ export const Friends = () => {
         </Box>
       </Box>
 
-      <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setOpen(true)}
+        sx={{ alignContent: "center" }}
+      >
         Send Friend Request
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -336,6 +349,6 @@ export const Friends = () => {
           </Button>
         </Stack>
       </Modal>
-    </>
+    </Card>
   );
 };

@@ -24,10 +24,7 @@ export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
-
-
-
-  const [votingDeck, setVotingDeck] = useState<VotingDeck[]>();
+  const [votingDecks, setVotingDecks] = useState<VotingDeck[]>();
 
   const api = useApi();
   const navigate = useNavigate();
@@ -39,22 +36,21 @@ export const Dashboard: FC = () => {
   };
 
   useEffect(() => {
-    console.log('here')
+    console.log("here");
     api.get("decks/waiting/me").then((res) => {
       if (!res.message) {
-        setVotingDeck(res);
-        console.log(res)
-        }
+        setVotingDecks(res);
+        console.log(res);
+      }
     });
-    }, []);
+  }, []);
 
-    if(open && votingDeck !== undefined){
-        return <TestVoting votingDeck={votingDeck[0]}/>
-    }
+  if (open && votingDecks !== undefined) {
+    return <TestVoting votingDeck={votingDecks[0]} />;
+  }
 
-
-  if (open && votingDeck) {
-    return <TestVoting votingDeck={votingDeck} />;
+  if (open && votingDecks) {
+    return <TestVoting votingDeck={votingDecks[0]} />;
   }
 
   return (
@@ -76,12 +72,6 @@ export const Dashboard: FC = () => {
         </Button>
         <Button className="dash-button" onClick={() => navigate("/createDeck")}>
           Create a Deck
-        </Button>
-        <Button
-          className="dash-button"
-          onClick={() => navigate("/startVoting")}
-        >
-          Start voting
         </Button>
       </Card>
       <h1>Decks</h1>
@@ -106,7 +96,7 @@ export const Dashboard: FC = () => {
         </Card>
       </Grid>
       <h1>Pending Votes</h1>
-      {votingDeck !== undefined && (
+      {votingDecks !== undefined && (
         <Grid item xs={12} sm={6} md={4}>
           <Card sx={{ maxWidth: 345 }} onClick={() => setOpen(true)}>
             <CardActionArea>
@@ -116,11 +106,7 @@ export const Dashboard: FC = () => {
                 image="/static/images/cards/contemplative-reptile.jpg"
                 alt="green iguana"
               />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  {votingDeck.title}
-                </Typography>
-              </CardContent>
+              <CardContent></CardContent>
             </CardActionArea>
           </Card>
         </Grid>

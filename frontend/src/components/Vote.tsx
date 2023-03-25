@@ -21,11 +21,10 @@ type VoteProps = {
 export const Vote = (props: VoteProps) => {
   const api = useApi();
   const { deck, user } = props;
-  const [activeGroup, setActiveGroup] = useState(0);
-  const [nextGroup, setNextGroup] = useState(1);
-  const [lastGroup, setLastGroup] = useState(2);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [deckQueue, setDeckQueue] = useState<number[]>([
+  const [nextIndex, setNextIndex] = useState(1);
+  const [lastIndex, setLastIndex] = useState(2);
+
   const [blendedDecks, setBlendedDecks] = useState<VotingDeck[]>([
     deck,
     deck,
@@ -65,18 +64,13 @@ export const Vote = (props: VoteProps) => {
   }, []);
 
   const handleVote = async (vote: VoteType, cardID: number) => {
-    // TODO: Verify this endpoint
     console.log(`Card: ${cardID} was ${vote}d by ${user.firstName}`);
-    const nextIndex = activeIndex + 1 <= 3 - 1 ? activeIndex + 1 : 0;
-    const currentGroup = document.querySelector(
-        `[data-index="${activeIndex}"]`
-      ),
-      nextGroup = document.querySelector(`[data-index="${nextIndex}"]`);
-
-    currentGroup.dataset.status = "after";
-    nextGroup.dataset.status = "active";
+    const nextIndexCalc =
+      activeIndex <= blendedDecks.length - 1 ? activeIndex + 1 : 0;
     setActiveIndex(nextIndex);
+    setNextIndex(nextIndexCalc);
 
+    // TODO: Verify this endpoint
     // const res = await api.post("vote", {
     //   vote,
     //   user: user.id,
@@ -89,9 +83,9 @@ export const Vote = (props: VoteProps) => {
   return (
     <div className="card-swiper">
       <div className="card-groups">
-        <div className="card-group" data-index="0" data-status="active">
-          {deck.cards.map((card) => (
-            <div className="big-card item-card ">
+        <div className="card-group" data-status="active">
+          {blendedDecks[activeIndex].cards.map((card) => (
+            <div className="big-card item-card">
               <ItemCard
                 key={card.id}
                 title={card.title}
@@ -103,51 +97,17 @@ export const Vote = (props: VoteProps) => {
             </div>
           ))}
         </div>
-        <div className="card-group" data-index="1" data-status="unknown">
-          {deck.cards.map((card, index) => (
-            <div className="big-card item-card" key={card.id}>
-              {index === 1 && (
-                <ItemCard
-                  title={card.title}
-                  description={card.content}
-                  photoURL={card.photoURL}
-                  handleVote={handleVote}
-                  id={card.id}
-                />
-              )}
-              {index !== 1 && (
-                <ItemCard
-                  title={card.title}
-                  description={card.content}
-                  photoURL={card.photoURL}
-                  handleVote={handleVote}
-                  id={card.id}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="card-group" data-index="2" data-status="unknown">
-          {deck.cards.map((card, index) => (
-            <div className="big-card item-card" key={card.id}>
-              {index === 2 && (
-                <ItemCard
-                  title={card.title}
-                  description={card.content}
-                  photoURL={card.photoURL}
-                  handleVote={handleVote}
-                  id={card.id}
-                />
-              )}
-              {index !== 2 && (
-                <ItemCard
-                  title={card.title}
-                  description={card.content}
-                  photoURL={card.photoURL}
-                  handleVote={handleVote}
-                  id={card.id}
-                />
-              )}
+        <div className="card-group" data-status="unknown">
+          {blendedDecks[activeIndex].cards.map((card) => (
+            <div className="big-card item-card">
+              <ItemCard
+                key={card.id}
+                title={card.title}
+                description={card.content}
+                photoURL={card.photoURL}
+                handleVote={handleVote}
+                id={card.id}
+              ></ItemCard>
             </div>
           ))}
         </div>

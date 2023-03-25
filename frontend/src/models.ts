@@ -8,6 +8,7 @@ export interface VotingDeck {
   type: string;
   createdAt: Date;
   updatedAt: Date;
+  queuePosition?: number;
 }
 
 export interface CustomDeck {

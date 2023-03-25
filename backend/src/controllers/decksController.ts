@@ -12,9 +12,12 @@ const createNewVotingDeck = async ({
   title,
   friends,
 }: CreateVotingDeckProps) => {
+  if (!userId) return null;
+  if (friends.length < 1) return null;
+  if (!title) return null;
   const newDeck = await client.votingDeck.create({
     data: {
-      status: "in progress",
+      status: "active",
       title,
       type,
       users: { connect: { id: userId } },
@@ -46,6 +49,8 @@ const addCardToDeck = async ({
   photoURL,
   link,
 }: AddCardsToDeckProps) => {
+  if (!title || !content) return null;
+  if (!votingDeckId && !customDeckId) return null;
   const card = await client.card.create({
     data: {
       title,
@@ -88,16 +93,10 @@ const makeMovieDeck =
     const ALLOWED_SERVICES = [203, 157, 26, 387, 372, 371, 444, 389, 307];
 
     const userId = req.jwtBody?.userId;
-    let type = "movie";
 
     // Create a new Deck
     const { services, quantity, genres, title, friends } =
       req.body as MovieDeckCreationBody;
-
-    if (friends.length < 1) {
-      res.status(404).json({ message: "Not enough friends" });
-      return;
-    }
 
     const newDeck = await createNewVotingDeck({
       client,
@@ -105,13 +104,10 @@ const makeMovieDeck =
       type: "movie",
       title,
       friends,
-    }).catch((err) => {
-      res.status(500).json({ message: "Internal Server Error" });
-      return;
     });
     if (!newDeck) {
-        res.status(500).json({ message: "Internal Server Error" });
-        return;
+      res.status(404).json({ message: "Invalid Input" });
+      return;
     }
 
     // build url to request to api for list of titles
@@ -139,43 +135,42 @@ const makeMovieDeck =
     let movieIds: number[] = [];
     await fetch(
       url +
-        `list-titles/?apiKey=${process.env.WATCHMODE_API_KEY}${
-          servicesQuery == "" ? "" : "&source_ids=" + servicesQuery
-        }${genresQuery == "" ? "" : "&genres=" + genresQuery}` +
+        `list-titles/?apiKey=${process.env.WATCHMODE_API_KEY}
+        ${servicesQuery == "" ? "" : "&source_ids=" + servicesQuery}
+        ${genresQuery == "" ? "" : "&genres=" + genresQuery}` +
         tailParams,
       {
         method: "GET",
       }
     )
-      .then((response) => response.json())
-      .then((json) => {
+    .then((response) => response.json())
+    .then((json) => {
         let movieIndeces: number[] = [];
         for (let i = 0; i < quantity; i++) {
-          if (i >= json.titles.length) {
-            break;
-          }
-          let index = Math.floor(Math.random() * json.titles.length);
-          while (movieIndeces.includes(index)) {
-            index = Math.floor(Math.random() * json.titles.length);
-          }
-          movieIndeces.push(index);
-        }
-        if (movieIndeces.length === 0) {
-          res.status(400).json({ message: "No movies found" });
-          return;
+            if (i >= json.titles.length) {
+                break;
+            }
+            let index = Math.floor(Math.random() * json.titles.length);
+            while (movieIndeces.includes(index)) {
+                index = Math.floor(Math.random() * json.titles.length);
+            }
+            movieIndeces.push(index);
         }
         for (let i = 0; i < movieIndeces.length; i++) {
-          movieIds.push(json.titles[movieIndeces[i]].id);
+            movieIds.push(json.titles[movieIndeces[i]].id);
         }
-      })
-      .catch((err) => {
-        res.status(500).json({ message: "Internal Server Error" });
-        return
-      });
+    });
+    if (movieIds.length < 1) {
+      res.status(404).json({ message: "No movies found" });
+      return;
+    }
 
     // get details for each movie
     let error = false;
     for (let i = 0; i < movieIds.length; i++) {
+        if (error) {
+            break;
+        }
       let jsonMovieData = {} as MovieData;
       await fetch(
         url +
@@ -189,7 +184,7 @@ const makeMovieDeck =
           jsonMovieData = json;
         })
         .catch((err) => {
-            error = true;
+          error = true;
         });
       const { title, year, us_rating, imdb_id, poster } = jsonMovieData;
       let content = "Year: " + year + " Rating: " + us_rating;
@@ -201,14 +196,12 @@ const makeMovieDeck =
         votingDeckId: newDeck.id,
         photoURL: poster,
         link,
-      }).catch((err) => {
-        error = true;
       });
     }
     if (error) {
-        res.status(500).json({ message: "Internal Server Error" });
-        return
-    } 
+      res.status(500).json({ message: "Internal Server Error" });
+      return;
+    }
 
     let newMovieDeck = await client.votingDeck.findFirst({
       where: {

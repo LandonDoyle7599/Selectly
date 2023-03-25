@@ -183,6 +183,24 @@ const unfriend =
                     friends: { set: newFriends }
                 }
             })
+            const oldFriend = await client.user.findUnique({
+                where: {
+                    id: friendId
+                },
+                include: {
+                    friends: true
+                }
+            })
+            const oldFriends = oldFriend?.friends
+            let newOldFriends = oldFriends?.filter(friend => friend.id !== userId)
+            await client.user.update({
+                where: {
+                    id: friendId
+                },
+                data: {
+                    friends: { set: newOldFriends }
+                }
+            })
             res.json({})
         }
 

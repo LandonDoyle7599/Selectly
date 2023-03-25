@@ -26,3 +26,8 @@ export type CustomDeckProps = {
   title: string;
   type: string;
 }
+
+export type CustomStartBody = {
+    id: number
+    friends: number[]
+}

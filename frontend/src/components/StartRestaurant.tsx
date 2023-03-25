@@ -69,7 +69,6 @@ export const StartRestaurant: FC = () => {
 
   return (
     <div>
-      <h1>StartMovie</h1>
       <TextField
         {...formikTextFieldProps(formik, "title", "Title")}
         label="Title"

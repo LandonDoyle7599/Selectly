@@ -46,7 +46,6 @@ export const TestVoting: FC<TestVotingProps> = (props) => {
 
   return (
     <div>
-      <div>{activeCard !== undefined && <h2>{activeCard?.title}</h2>}</div>
       <Stack>
       <Card>
         <CardMedia sx={{ height: "100%" }} image={activeCard?.photoURL ? activeCard.photoURL : ""} title={activeCard?.title} />

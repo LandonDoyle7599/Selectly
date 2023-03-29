@@ -1,6 +1,8 @@
-import { Button, Typography } from "@material-ui/core";
+import { Button, Divider, Typography } from "@material-ui/core";
+import { useTheme } from "@mui/material/styles";
 import { Stack } from "@mui/material";
 import React, {FC, useEffect, useState} from "react";
+import { CircularProgress } from '@mui/material';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
 import { VotingDeck } from "../models";
@@ -17,6 +19,7 @@ export const Results: FC = () => {
     const [votingResults, setVotingResults] = useState<VotingDeck>();
     const api = useApi();
     const [open, setOpen] = useState(false);
+    const theme = useTheme();
 
     //use effect that fetches results from backend every three seconds
     useEffect(() => {
@@ -41,10 +44,12 @@ export const Results: FC = () => {
 
     if(!votingResults){
         return(
-            <div>
-                <h1>Results</h1>
-                <p>Waiting for your friends to finish voting</p>
-            </div>
+            <Stack sx={{justifyContent:"center", alignItems:"center", width:"100vw", height:"100vh"}}>
+                <Typography variant="h2">Results</Typography>
+                <Typography variant="h5" style={{paddingBottom:4}}>Waiting for your friends to finish voting...</Typography>
+                <Button variant="text" style={{marginBottom:20}} color="primary" onClick={() => navigate("/dashboard")}>Return to the dashboard while you wait</Button>
+                <CircularProgress/>
+            </Stack>
         )
     }
     

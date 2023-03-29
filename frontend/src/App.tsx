@@ -15,6 +15,8 @@ import { StartVote } from "./pages/StartVote";
 import { createTheme, ThemeProvider } from "@material-ui/core/styles";
 import { Results } from "./pages/Results";
 import { TestVoting } from "./pages/TestVoting";
+import NavBar from "./components/NavBar";
+import { Root } from "./pages/Root";
 
 const theme = createTheme({
   palette: {
@@ -53,7 +55,7 @@ const theme = createTheme({
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AccountIcon />,
+    element: <Root/>,
     children: [
       {
         path: "login",
@@ -111,7 +113,7 @@ export const App = () => {
     <>
       <ThemeProvider theme={theme}>
         <ApiContext.Provider value={api}>
-          <RouterProvider router={router} />
+          <RouterProvider router={router}/>
         </ApiContext.Provider>
       </ThemeProvider>
     </>

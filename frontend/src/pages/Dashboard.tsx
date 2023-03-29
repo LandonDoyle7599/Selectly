@@ -23,10 +23,12 @@ import { useStyles } from "../styles/FormStyle";
 import { TestVoting } from "./TestVoting";
 import { CustomDeck } from "../components/CustomDeck";
 import { AddCustomDeck } from "../components/AddCustomDeck";
+import { useAuth } from "../hooks/useAuth";
 
 export const Dashboard: FC = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const {token, setToken} = useAuth();
 
   const [votingDecks, setVotingDecks] = useState<VotingDeck[]>();
   const [customDecks, setCustomDecks] = useState<VotingDeck[]>();
@@ -37,7 +39,8 @@ export const Dashboard: FC = () => {
   validateAuth();
 
   const logout = () => {
-    localStorage.removeItem("token");
+    setToken("");
+    localStorage.clear();
     navigate("/home");
   };
 
@@ -63,23 +66,7 @@ export const Dashboard: FC = () => {
 
   return (
     <Stack sx={{ width: "100vw", height: "100vh" }} direction="column">
-      <Card
-        sx={{
-          display: "flex",
-          justifyContent: "align-items",
-          p: 2,
-          m: 4,
-          backgroundColor: "primary.secondary",
-        }}
-      >
-        <Button className="dash-button" onClick={() => navigate("/profile")}>
-          Profile
-        </Button>
-        <Button className="dash-button" onClick={() => navigate("/history")}>
-          History
-        </Button>
-      </Card>
-      <h1>Decks</h1>
+      <Typography variant="h3">Decks</Typography>
       <Grid
           container
           spacing={{ xs: 2, md: 3 }}
@@ -104,7 +91,7 @@ export const Dashboard: FC = () => {
         <AddCustomDeck />
         </Grid>
       </Grid>
-      <h1>Pending Votes</h1>
+      <Typography variant="h3">Pending Votes</Typography>
       {votingDecks !== undefined && (
         <Grid
           container

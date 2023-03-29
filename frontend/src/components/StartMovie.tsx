@@ -1,8 +1,11 @@
 import { LoadingButton } from "@mui/lab";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Button,
   Card,
+  FormControl,
   MenuItem,
+  OutlinedInput,
   Select,
   Stack,
   TextField,
@@ -68,7 +71,7 @@ export const StartMovie: FC = () => {
         .then((res) => {
           if (!res.message) {
             setVotingDeck(res);
-            navigate('/vote', { state: { votingDeck: res } });
+            navigate("/vote", { state: { votingDeck: res } });
           } else {
             setError(res.message);
           }
@@ -78,76 +81,117 @@ export const StartMovie: FC = () => {
   });
 
   return (
-    <Stack direction={"column"} sx={{backgroundColor: secondaryColor}}>
-      <Card sx={{ width: "50%", margin: "8px", padding: "8px" }}>
-        <Stack direction={"column"}>
-          <h1>Select Your Movies </h1>
-          <Typography mt={3} variant="h5">
-            Title
-          </Typography>
-          <TextField
-            {...formikTextFieldProps(formik, "title", "")}
-            variant="outlined"
+    <Stack
+      sx={{
+        width: "100%",
+        height: "90vh",
+        justifyItems: "center",
+        alignItems: "center",
+        alignContent: "center",
+      }}
+      justifyContent="center"
+      alignItems={"center"}
+    >
+      <Card elevation={1} style={{ width: 400, padding: 10 }}>
+        <Stack direction="row" spacing={5} >
+          <ArrowBackIcon
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/dashboard")}
           />
           <Typography mt={3} variant="h5">
-            Quantity
+            Start Deciding a Movie
           </Typography>
+        </Stack>
+        <Stack direction="column" spacing={2} paddingTop={2}>
           <TextField
-            {...formikTextFieldNumberProps(formik, "quantity", "")}
+            {...formikTextFieldProps(formik, "title", "Title")}
             variant="outlined"
           />
-
-          <Typography mt={3} variant="h5">
-            Services
-          </Typography>
-          <Select
-            value={formik.values.services}
-            multiple
-            onChange={(e) => formik.setFieldValue("services", e.target.value)}
-            name="Services"
-            label="Services"
-          >
-            {Object.entries(Services).map(([key, value], i) => (
-              <MenuItem key={i} value={key}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
-          <Typography mt={3} variant="h5">
-            Genres
-          </Typography>
-          <Select
-            // sx={{ backgroundColor: secondaryColor, padding: "5" }}
-            value={formik.values.genres}
-            multiple
-            onChange={(e) => formik.setFieldValue("genres", e.target.value)}
-            name="Genres"
-            label="Genres"
-            placeholder="Genres"
-          >
-            {Object.entries(Genres).map(([key, value], i) => (
-              <MenuItem key={i} value={key}>
-                {value}
-              </MenuItem>
-            ))}
-          </Select>
-          <Typography mt={3} variant="h5">
-            Friends
-          </Typography>
-          <Select
-            // sx={{ backgroundColor: secondaryColor }}
-            value={formik.values.friends}
-            multiple
-            onChange={(e) => formik.setFieldValue("friends", e.target.value)}
-            name="Friends"
-            label="Friends"
-          >
-            {friends?.map((friend, i) => (
-              <MenuItem key={i} value={friend.id}>
-                {friend.firstName} {friend.lastName}
-              </MenuItem>
-            ))}
-          </Select>
+          <TextField
+            {...formikTextFieldNumberProps(formik, "quantity", "Quantity")}
+            variant="outlined"
+          />
+          <FormControl sx={{ m: 1, mt: 3 }}>
+            <Select
+              multiple
+              displayEmpty
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return <Typography>Services</Typography>;
+                }
+                let names = "";
+                selected.forEach((key) => {
+                  names += `${Services[key]}, `;
+                });
+                names = names.substring(0, names.length - 2);
+                return names;
+              }}
+              value={formik.values.services}
+              onChange={(e) => formik.setFieldValue("services", e.target.value)}
+              input={<OutlinedInput />}
+            >
+              {Object.entries(Services).map(([key, value], i) => (
+                <MenuItem key={i} value={key}>
+                  {value}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ m: 1, mt: 3 }}>
+            <Select
+              multiple
+              displayEmpty
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return <Typography>Genres</Typography>;
+                }
+                let names = "";
+                selected.forEach((key) => {
+                  names += `${Genres[key]}, `;
+                });
+                names = names.substring(0, names.length - 2);
+                return names;
+              }}
+              value={formik.values.genres}
+              onChange={(e) => formik.setFieldValue("genres", e.target.value)}
+              input={<OutlinedInput />}
+            >
+              {Object.entries(Genres).map(([key, value], i) => (
+                <MenuItem key={i} value={key}>
+                  {value}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl sx={{ m: 1, mt: 3 }}>
+            <Select
+              multiple
+              displayEmpty
+              renderValue={(selected) => {
+                if (selected.length === 0) {
+                  return <Typography>Friends</Typography>;
+                }
+                let names = "";
+                selected.forEach((id) => {
+                  const friend = friends?.find((f) => f.id === id);
+                  if (friend) {
+                    names += `${friend.firstName} ${friend.lastName}, `;
+                  }
+                });
+                names = names.substring(0, names.length - 2);
+                return names;
+              }}
+              value={formik.values.friends}
+              onChange={(e) => formik.setFieldValue("friends", e.target.value)}
+              input={<OutlinedInput />}
+            >
+              {friends?.map((friend, i) => (
+                <MenuItem key={i} value={friend.id}>
+                  {friend.firstName} {friend.lastName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <LoadingButton
             loading={formik.isSubmitting}
             variant="contained"
@@ -159,7 +203,7 @@ export const StartMovie: FC = () => {
               },
             }}
           >
-            Submit
+            Start
           </LoadingButton>
         </Stack>
       </Card>

@@ -1,5 +1,6 @@
 import { TextFieldProps } from "@mui/material";
 import { FormikValues, useFormik } from "formik";
+import { matchPath, useLocation } from "react-router-dom";
 import { VotingDeck } from "../models";
 
 // ================================
@@ -90,5 +91,17 @@ export function getCardVotes(deck: VotingDeck) : CardsToVoteCount {
 export function getMostVotedForCard(deck: VotingDeck) : string {
     const cardVotes = getCardVotes(deck);
     return Object.keys(cardVotes)[0];
+}
+
+export function useRouteMatch(patterns: string[]) {
+  const { pathname } = useLocation();
+  for (let i = 0; i < patterns.length; i += 1) {
+    const pattern = patterns[i];
+    const possibleMatch = matchPath(pattern, pathname);
+    if (possibleMatch !== null) {
+      return possibleMatch;
+    }
+  }
+  return null;
 }
 

@@ -1,30 +1,33 @@
-import { Button, IconButton, Popover } from "@material-ui/core";
+import { Button, IconButton, Popover, Typography } from "@material-ui/core";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import { Stack } from "@mui/system";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 export const AccountIcon = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { pathname } = useLocation();
-
-  if (
-    pathname === "/home" ||
-    pathname === "/login" ||
-    pathname === "/createAccount" ||
-    pathname === "/"
-  )
-    return <Outlet />;
-
+  const { token } = useAuth();
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
+    setAnchorEl(null);
     navigate("/home");
   };
 
+  const signIn = () => {
+    setAnchorEl(null);
+    navigate("/login");
+  };
+
+  useEffect(() => {
+    if(!token) return;
+  }, [token]);
+
   return (
     <>
-      <Stack
+      {/* <Stack
         direction="row-reverse"
         sx={{
           width: "100%",
@@ -34,8 +37,11 @@ export const AccountIcon = () => {
           alignItems: "center",
           justifyContent: "space-between",
         }}
-      >
-        <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+      > */}
+        <IconButton onClick={(e) => {
+          
+          setAnchorEl(e.currentTarget)}
+        }>
           <AccountCircleRoundedIcon fontSize="large" />
         </IconButton>
 
@@ -49,20 +55,18 @@ export const AccountIcon = () => {
           }}
         >
           <Stack direction={"column"}>
-            <Button
-              style={{ padding: 2 }}
-              variant="text"
-              onClick={() => navigate("/profile")}
-            >
-              Profile
-            </Button>
+            {(token !== "" && token !== null) ? (
             <Button style={{ padding: 2 }} variant="text" onClick={logout}>
-              Sign Out
+              <Typography variant="body1">Logout</Typography>
             </Button>
+            ) : (
+            <Button style={{ padding: 2 }} variant="text" onClick={signIn}>
+              <Typography variant="body1">Sign In</Typography>
+            </Button>
+            )}
           </Stack>
         </Popover>
-      </Stack>
-      <Outlet />
+      {/* </Stack> */}
     </>
   );
 };
